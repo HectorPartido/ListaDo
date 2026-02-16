@@ -343,7 +343,8 @@ body {
 }
 
 .modal-form input,
-.modal-form select {
+.modal-form select,
+.modal-form textarea {
     padding: 10px 14px;
     border: 2px solid #334155;
     border-radius: 8px;
@@ -352,6 +353,7 @@ body {
     font-size: 0.95rem;
     outline: none;
     transition: border-color 0.3s ease;
+    font-family: inherit;
 }
 
 /* Listamos dos selectores separados por coma:
@@ -360,7 +362,8 @@ body {
    "select" es el elemento de lista desplegable (<select>). */
 
 .modal-form input:focus,
-.modal-form select:focus {
+.modal-form select:focus,
+.modal-form textarea:focus {
     border-color: #3b82f6;
 }
 

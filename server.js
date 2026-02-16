@@ -19,6 +19,7 @@ const authRoutes = require('./src/routes/authRoutes');
 const userRoutes = require('./src/routes/userRoutes');
 const subjectRoutes = require('./src/routes/subjectRoutes');
 const taskRoutes = require('./src/routes/taskRoutes');
+const classRoutes = require('./src/routes/classRoutes');
 
 // --- 4. Crear la aplicación ---
 const app = express();
@@ -68,6 +69,8 @@ app.use('/api/user', userRoutes);
 app.use('/api/subjects', subjectRoutes);
 
 app.use('/api/tasks', taskRoutes);
+
+app.use('/api/classes', classRoutes);
 
 // --- 7. Ruta principal ---
 app.get('/', (req, res) => {

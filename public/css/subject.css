@@ -273,7 +273,235 @@
     font-weight: 600;
 }
 
-/* !important → Fuerza que este estilo tenga prioridad sobre otros.
-   Se usa con moderación porque puede dificultar el mantenimiento.
-   Aquí lo usamos para que el color rojo siempre gane,
-   sin importar qué otros estilos se apliquen. */
+/* ============================================
+   ESTILOS DE CLASES
+   ============================================ */
+
+/* --- TARJETA DE CLASE --- */
+.class-item {
+    background-color: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 15px;
+    transition: border-color 0.2s ease;
+}
+
+.class-item:hover {
+    border-color: #475569;
+}
+
+.class-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.class-header h4 {
+    font-size: 1rem;
+    margin-bottom: 4px;
+}
+
+.class-date {
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.class-notes {
+    font-size: 0.88rem;
+    color: #94a3b8;
+    margin-bottom: 15px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+/* white-space: pre-wrap → Respeta los saltos de línea que el
+   usuario escribió en los apuntes, pero permite que el texto
+   se ajuste al ancho del contenedor. Sin esto, los saltos de
+   línea (\n) se ignorarían y el texto sería un bloque continuo.
+   
+   line-height: 1.6 → Espacio entre líneas. 1.6 veces el tamaño
+   de la fuente. Hace el texto más legible. */
+
+/* --- GALERÍA DE IMÁGENES --- */
+.class-images {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.class-image-wrapper {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    aspect-ratio: 1;
+    cursor: pointer;
+}
+
+/* position: relative → Establece este elemento como "referencia"
+   para los hijos que tengan position: absolute.
+   Así, cuando pongamos un botón de eliminar encima de la imagen,
+   se posicionará relativo a este contenedor, no a la página.
+   
+   overflow: hidden → Si el contenido sobresale del contenedor
+   (por ejemplo, una imagen más grande), se recorta.
+   
+   aspect-ratio: 1 → Fuerza que el ancho y alto sean iguales
+   (proporción 1:1 = cuadrado). Así todas las miniaturas
+   tienen la misma forma sin importar el tamaño de la imagen original. */
+
+.class-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+/* object-fit: cover → La imagen cubre todo el espacio disponible
+   manteniendo su proporción. Si la imagen no es cuadrada,
+   se recorta (como un "zoom") en vez de deformarse.
+   
+   Otros valores de object-fit:
+     contain → Se ajusta completa dentro del espacio (puede dejar bordes)
+     fill    → Se estira para llenar (se deforma)
+     cover   → Llena el espacio recortando si es necesario (la mejor opción) */
+
+.class-image-wrapper:hover img {
+    transform: scale(1.05);
+}
+
+.delete-image-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 24px;
+    height: 24px;
+    background-color: rgba(239, 68, 68, 0.8);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+/* position: absolute → Se posiciona relativo al padre con
+   position: relative (class-image-wrapper).
+   top: 5px; right: 5px → 5px desde arriba y desde la derecha.
+   
+   opacity: 0 → Empieza invisible. Solo aparece al hacer hover. */
+
+.class-image-wrapper:hover .delete-image-btn {
+    opacity: 1;
+}
+
+/* --- BOTÓN DE SUBIR IMÁGENES --- */
+.upload-section {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.file-input-label {
+    padding: 8px 14px;
+    background-color: #334155;
+    color: #e2e8f0;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    transition: background-color 0.2s ease;
+}
+
+/* Usamos un <label> estilizado en vez del <input type="file"> nativo
+   porque el input de archivo por defecto es muy feo y difícil
+   de personalizar en todos los navegadores. El truco es:
+   1. Ocultar el input real
+   2. Estilizar un label que apunte al input
+   3. Al hacer clic en el label, se activa el input oculto */
+
+.file-input-label:hover {
+    background-color: #475569;
+}
+
+.file-input-hidden {
+    display: none;
+}
+
+/* Oculta el input de archivo nativo. El label lo activa. */
+
+.upload-btn {
+    padding: 8px 14px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    transition: background-color 0.2s ease;
+}
+
+.upload-btn:hover {
+    background-color: #2563eb;
+}
+
+.upload-btn:disabled {
+    background-color: #334155;
+    cursor: not-allowed;
+}
+
+/* :disabled → Se aplica cuando el botón tiene el atributo "disabled".
+   cursor: not-allowed → Muestra un ícono de "prohibido" al pasar el mouse. */
+
+.file-count {
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+
+/* --- VISOR DE IMAGEN A PANTALLA COMPLETA --- */
+.image-viewer {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 300;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.image-viewer.active {
+    display: flex;
+}
+
+.image-viewer img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+/* El visor muestra la imagen a tamaño completo al hacer clic.
+   max-width: 90% y max-height: 90% aseguran que no se salga
+   de la pantalla, dejando un margen. */
+
+/* --- VINCULACIÓN TAREA-CLASE --- */
+.linked-class {
+    font-size: 0.78rem;
+    color: #3b82f6;
+    cursor: pointer;
+    margin-top: 4px;
+}
+
+.linked-class:hover {
+    text-decoration: underline;
+}
