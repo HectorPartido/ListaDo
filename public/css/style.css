@@ -1,0 +1,208 @@
+/* ============================================
+    public/css/style.css — Estilos de ListToDo
+   ============================================ */
+
+/* --- RESET Y BASE --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 
+    box-sizing: border-box; → Cambia cómo se calcula el tamaño
+    de los elementos. Por defecto, si dices width: 200px y le
+    agregas padding: 20px, el ancho TOTAL sería 240px (200+20+20).
+    Con border-box, el ancho TOTAL es 200px (el padding se resta
+   del interior). */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #0f172a;
+    color: #e2e8f0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    background-color: #1e293b;
+    padding: 40px;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 5px;
+}
+
+/* rem → Es una unidad relativa al tamaño de fuente raíz.
+1rem = 16px por defecto. 2rem = 32px.
+Es mejor que px porque se adapta si el usuario
+cambia el tamaño de fuente del navegador. */
+
+.subtitle {
+    text-align: center;
+    color: #94a3b8;
+    margin-bottom: 30px;
+    font-size: 0.9rem;
+}
+
+/* --- SELECTOR LOGIN / REGISTRO --- */
+.form-toggle {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+/* gap: 10px → Espacio entre los elementos hijos en un flex container.
+   Es más limpio que poner margin en cada hijo. */
+
+.toggle-btn {
+    flex: 1;
+    padding: 10px;
+    border: 2px solid #334155;
+    background-color: transparent;
+    color: #94a3b8;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.toggle-btn.active {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+}
+
+/* .toggle-btn.active → Selecciona elementos que tengan AMBAS clases:
+   "toggle-btn" Y "active". Es el estilo del botón seleccionado. */
+
+.toggle-btn:hover {
+    border-color: #3b82f6;
+}
+
+/* :hover → Se aplica cuando el mouse está encima del elemento.
+   Es un "pseudo-selector": no está en el HTML, es un estado. */
+
+/* --- FORMULARIOS --- */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* flex-direction: column → Los elementos se apilan verticalmente
+   (por defecto flex los pone en fila horizontal). */
+
+.auth-form.hidden {
+    display: none;
+}
+
+/* display: none → El elemento desaparece completamente.
+No ocupa espacio en la página. Lo usamos para ocultar
+el formulario de registro cuando se muestra el de login. */
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+/* font-weight: 500 → Grosor de la fuente. 400 = normal, 700 = bold.
+   500 es "semi-bold", un poco más grueso que lo normal. */
+
+.form-group input {
+    padding: 12px 16px;
+    border: 2px solid #334155;
+    border-radius: 8px;
+    background-color: #0f172a;
+    color: #e2e8f0;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+/* padding: 12px 16px → 12px arriba/abajo, 16px izquierda/derecha.
+    Cuando pones 2 valores: el primero es vertical, el segundo horizontal.
+    outline: none → Quita el borde azul que el navegador pone
+    cuando haces clic en un input. Lo reemplazaremos con nuestro
+   propio estilo en :focus. */
+
+.form-group input:focus {
+    border-color: #3b82f6;
+}
+
+/* :focus → Se aplica cuando el usuario hace clic en el input
+    (cuando el campo está "enfocado"). Cambiamos el borde a azul
+   para dar feedback visual de qué campo está activo. */
+
+.form-group input::placeholder {
+    color: #475569;
+}
+
+/* ::placeholder → Estiliza el texto del placeholder
+   (el texto gris de ejemplo como "tu@email.com"). */
+
+.btn-primary {
+    padding: 12px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 5px;
+}
+
+.btn-primary:hover {
+    background-color: #2563eb;
+}
+
+/* Un azul más oscuro al pasar el mouse. Da la sensación
+de que el botón "responde" al usuario. */
+
+/* --- MENSAJES --- */
+.message {
+    margin-top: 20px;
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 0.9rem;
+    display: none;
+}
+
+/* display: none → Empieza oculto. Lo mostramos con JS cuando
+necesitemos mostrar un mensaje de éxito o error. */
+
+.message.success {
+    display: block;
+    background-color: #064e3b;
+    color: #6ee7b7;
+    border: 1px solid #065f46;
+}
+
+.message.error {
+    display: block;
+    background-color: #7f1d1d;
+    color: #fca5a5;
+    border: 1px solid #991b1b;
+}
+
+/* display: block → Hace visible el elemento.
+Cuando JS le agregue la clase "success" o "error",
+el mensaje aparecerá con el color correspondiente. */
