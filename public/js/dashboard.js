@@ -140,3 +140,401 @@ verifyAuth();
 // Ejecutamos la verificación al cargar la página.
 // Si el token es válido, el dashboard se muestra normalmente.
 // Si no, el usuario es redirigido al login.
+
+// =====================================================
+// GESTIÓN DE MATERIAS
+// =====================================================
+
+// --- COLORES DISPONIBLES PARA MATERIAS ---
+const subjectColors = [
+    { name: 'Azul', value: '#3b82f6' },
+    { name: 'Rojo', value: '#ef4444' },
+    { name: 'Verde', value: '#22c55e' },
+    { name: 'Amarillo', value: '#eab308' },
+    { name: 'Morado', value: '#a855f7' },
+    { name: 'Rosa', value: '#ec4899' },
+    { name: 'Naranja', value: '#f97316' },
+    { name: 'Cyan', value: '#06b6d4' }
+];
+// Un array de objetos con los colores que el usuario puede elegir.
+// Cada objeto tiene un nombre legible y su valor hexadecimal.
+
+// --- REFERENCIAS A ELEMENTOS ---
+const subjectsList = document.getElementById('subjects-list');
+const addSubjectBtn = document.getElementById('add-subject-btn');
+
+// --- VARIABLE DE ESTADO ---
+let currentEditingSubjectId = null;
+// Esta variable guardará el id de la materia que estamos editando.
+// Si es null, estamos CREANDO una nueva. Si tiene un valor,
+// estamos EDITANDO una existente.
+// Esto se llama "variable de estado": guarda en qué "estado"
+// está la interfaz en un momento dado.
+
+// =====================================================
+// CREAR EL MODAL DINÁMICAMENTE
+// =====================================================
+function createSubjectModal() {
+    // En vez de escribir el HTML del modal directamente en dashboard.html,
+    // lo creamos con JavaScript. Esto es útil cuando el HTML es complejo
+    // o necesita ser dinámico.
+
+    const modalHTML = `
+    <div id="subject-modal" class="modal-overlay">
+      <div class="modal-content">
+        <h3 id="modal-title">Nueva Materia</h3>
+        <form id="subject-form" class="modal-form">
+          <div>
+            <label for="subject-name">Nombre de la materia</label>
+            <input 
+              type="text" 
+              id="subject-name" 
+              placeholder="Ej: Matemáticas, Historia..." 
+              required 
+              maxlength="100"
+            >
+          </div>
+          <div>
+            <label>Color</label>
+            <div id="color-picker" class="color-picker">
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button type="button" id="cancel-subject" class="btn-cancel">Cancelar</button>
+            <button type="submit" class="btn-submit">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+    // Template literal multilínea con el HTML del modal.
+    //
+    // maxlength="100" → El navegador no permite escribir más de
+    // 100 caracteres (coincide con VARCHAR(100) en la base de datos).
+    //
+    // type="button" en Cancelar → Evita que el botón dispare
+    // el submit del formulario. Solo los type="submit" lo hacen.
+
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    // insertAdjacentHTML(posición, html) → Inserta HTML en relación
+    // al elemento. Las posiciones posibles son:
+    //   'beforebegin' → Antes del elemento
+    //   'afterbegin'  → Dentro, al inicio
+    //   'beforeend'   → Dentro, al final
+    //   'afterend'    → Después del elemento
+    //
+    // 'beforeend' en document.body → Lo inserta al final del <body>.
+
+    // --- CREAR LOS BOTONES DE COLOR ---
+    const colorPicker = document.getElementById('color-picker');
+    subjectColors.forEach((color, index) => {
+        const colorBtn = document.createElement('div');
+        // document.createElement('div') → Crea un nuevo elemento <div>
+        // en memoria (aún no está en la página).
+
+        colorBtn.className = `color-option ${index === 0 ? 'selected' : ''}`;
+        // Si es el primer color (index 0), le agrega la clase 'selected'.
+        //
+        // Esta es una "expresión ternaria": condición ? siVerdadero : siFalso
+        // Es una forma corta de escribir un if/else:
+        //   if (index === 0) { 'selected' } else { '' }
+
+        colorBtn.style.backgroundColor = color.value;
+        // .style.backgroundColor → Modifica el estilo CSS directamente
+        // desde JavaScript. Equivale a poner style="background-color: #3b82f6"
+        // en el HTML.
+
+        colorBtn.dataset.color = color.value;
+        // .dataset → Permite guardar datos personalizados en un elemento.
+        // Genera un atributo data-color="#3b82f6" en el HTML.
+        // Después podemos leerlo con element.dataset.color.
+        //
+        // Los atributos data-* son una forma estándar de HTML para
+        // guardar información extra en elementos sin usar variables JS.
+
+        colorBtn.title = color.name;
+        // .title → El texto que aparece cuando pasas el mouse y esperas
+        // un momento (tooltip). Mostrará "Azul", "Rojo", etc.
+
+        colorBtn.addEventListener('click', () => {
+            document.querySelectorAll('.color-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            // querySelectorAll('.color-option') → Busca TODOS los elementos
+            // que tengan la clase 'color-option'. Retorna un NodeList
+            // (similar a un array).
+            //
+            // .forEach(opt => { ... }) → Recorre cada uno y le quita
+            // la clase 'selected'. Así "deseleccionamos" todos.
+
+            colorBtn.classList.add('selected');
+            // Luego seleccionamos solo el que se hizo clic.
+        });
+
+        colorPicker.appendChild(colorBtn);
+        // .appendChild(elemento) → Agrega el elemento como hijo.
+        // Aquí metemos cada botón de color dentro del contenedor.
+        // Es como poner una pieza dentro de una caja.
+    });
+
+    // --- EVENTOS DEL MODAL ---
+    document.getElementById('cancel-subject').addEventListener('click', closeSubjectModal);
+    // Al hacer clic en Cancelar, cerramos el modal.
+
+    document.getElementById('subject-modal').addEventListener('click', (event) => {
+        if (event.target.id === 'subject-modal') {
+            closeSubjectModal();
+        }
+    });
+    // event.target → El elemento EXACTO donde se hizo clic.
+    //
+    // Si el clic fue en el overlay (el fondo oscuro), cerramos el modal.
+    // Si fue dentro del contenido del modal, no pasa nada.
+    //
+    // Esto permite cerrar el modal haciendo clic "fuera" de él,
+    // un patrón de UX muy común.
+
+    document.getElementById('subject-form').addEventListener('submit', handleSubjectSubmit);
+}
+
+// =====================================================
+// ABRIR Y CERRAR EL MODAL
+// =====================================================
+function openSubjectModal(subject = null) {
+    // subject = null → Parámetro por defecto.
+    // Si llamamos openSubjectModal() sin argumento, es para CREAR.
+    // Si llamamos openSubjectModal(materia), es para EDITAR.
+
+    const modal = document.getElementById('subject-modal');
+    const title = document.getElementById('modal-title');
+    const nameInput = document.getElementById('subject-name');
+
+    if (subject) {
+        // --- MODO EDICIÓN ---
+        title.textContent = 'Editar Materia';
+        nameInput.value = subject.name;
+        currentEditingSubjectId = subject.id;
+
+        // Seleccionar el color actual de la materia
+        document.querySelectorAll('.color-option').forEach(opt => {
+            opt.classList.remove('selected');
+            if (opt.dataset.color === subject.color) {
+                opt.classList.add('selected');
+            }
+        });
+    } else {
+        // --- MODO CREACIÓN ---
+        title.textContent = 'Nueva Materia';
+        nameInput.value = '';
+        currentEditingSubjectId = null;
+
+        // Seleccionar el primer color por defecto
+        document.querySelectorAll('.color-option').forEach((opt, index) => {
+            opt.classList.remove('selected');
+            if (index === 0) opt.classList.add('selected');
+        });
+    }
+
+    modal.classList.add('active');
+    nameInput.focus();
+    // .focus() → Pone el cursor automáticamente en el campo de texto.
+    // Así el usuario puede empezar a escribir inmediatamente sin
+    // tener que hacer clic en el campo primero.
+}
+
+function closeSubjectModal() {
+    const modal = document.getElementById('subject-modal');
+    modal.classList.remove('active');
+    currentEditingSubjectId = null;
+}
+
+// =====================================================
+// ENVIAR EL FORMULARIO (CREAR O EDITAR)
+// =====================================================
+async function handleSubjectSubmit(event) {
+    event.preventDefault();
+
+    const name = document.getElementById('subject-name').value.trim();
+    const selectedColor = document.querySelector('.color-option.selected');
+    // .querySelector() → Similar a querySelectorAll pero retorna
+    // solo el PRIMER elemento que coincida.
+    //
+    // '.color-option.selected' → Busca un elemento que tenga
+    // AMBAS clases: color-option Y selected.
+
+    const color = selectedColor ? selectedColor.dataset.color : '#3b82f6';
+    // Si hay un color seleccionado, usa su data-color.
+    // Si por alguna razón no hay ninguno, usa azul por defecto.
+
+    if (!name) {
+        alert('El nombre de la materia es obligatorio');
+        return;
+    }
+    // alert() → Muestra una ventana emergente del navegador.
+    // No es la forma más elegante, pero es simple para validaciones.
+
+    try {
+        let response;
+
+        if (currentEditingSubjectId) {
+            // --- EDITAR (PUT) ---
+            response = await fetchWithAuth(`/api/subjects/${currentEditingSubjectId}`, {
+                method: 'PUT',
+                body: JSON.stringify({ name, color })
+            });
+        } else {
+            // --- CREAR (POST) ---
+            response = await fetchWithAuth('/api/subjects', {
+                method: 'POST',
+                body: JSON.stringify({ name, color })
+            });
+        }
+
+        const data = await response.json();
+
+        if (response.ok) {
+            closeSubjectModal();
+            loadSubjects();
+            // Después de crear/editar, recargamos la lista de materias
+            // para que se vea el cambio inmediatamente.
+        } else {
+            alert(data.error);
+        }
+
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error al guardar la materia');
+    }
+}
+
+// =====================================================
+// CARGAR Y MOSTRAR LAS MATERIAS
+// =====================================================
+async function loadSubjects() {
+    try {
+        const response = await fetchWithAuth('/api/subjects');
+        const data = await response.json();
+
+        if (!response.ok) {
+            console.error('Error al cargar materias:', data.error);
+            return;
+        }
+
+        renderSubjects(data.subjects);
+
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+function renderSubjects(subjects) {
+    // Esta función recibe el array de materias y genera el HTML.
+    // Cada vez que se llama, REEMPLAZA todo el contenido anterior.
+
+    if (subjects.length === 0) {
+        subjectsList.innerHTML = `
+      <p class="empty-message">Aún no tienes materias. ¡Crea tu primera materia!</p>
+    `;
+        return;
+    }
+    // .innerHTML → Reemplaza TODO el contenido HTML interno del elemento.
+    // A diferencia de .textContent (que solo maneja texto plano),
+    // .innerHTML interpreta las etiquetas HTML.
+
+    subjectsList.innerHTML = subjects.map(subject => `
+    <div class="subject-card" data-id="${subject.id}">
+      <div class="subject-color" style="background-color: ${subject.color}"></div>
+      <h4>${subject.name}</h4>
+      <p class="subject-stats">
+        📝 Tareas: 0 &nbsp;|&nbsp; 📖 Clases: 0
+      </p>
+      <div class="subject-actions">
+        <button class="btn-edit" onclick="editSubject('${subject.id}')">✏️ Editar</button>
+        <button class="btn-delete" onclick="deleteSubject('${subject.id}')">🗑️ Eliminar</button>
+      </div>
+    </div>
+  `).join('');
+    // .map() → Transforma cada elemento del array en otra cosa.
+    // Aquí transformamos cada objeto "subject" en un string de HTML.
+    //
+    // Ejemplo: si subjects = [{ name: "Mate", color: "#3b82f6" }]
+    // .map() retorna: ['<div class="subject-card">...Mate...</div>']
+    //
+    // .join('') → Une todos los strings del array en uno solo.
+    // Sin .join(), innerHTML recibiría un array, no un string.
+    // El argumento '' (string vacío) significa "une sin separador".
+    //   ['<div>A</div>', '<div>B</div>'].join('')
+    //   → '<div>A</div><div>B</div>'
+    //
+    // onclick="editSubject('...')" → Ejecuta la función cuando
+    // se hace clic en el botón. Pasamos el id de la materia.
+    //
+    // &nbsp; → "Non-breaking space" (espacio que no se rompe).
+    // Es un carácter HTML que se muestra como espacio.
+    // Se usa para agregar separación visual entre elementos en línea.
+}
+
+// =====================================================
+// EDITAR UNA MATERIA
+// =====================================================
+async function editSubject(id) {
+    try {
+        const response = await fetchWithAuth(`/api/subjects/${id}`);
+        const data = await response.json();
+
+        if (response.ok) {
+            openSubjectModal(data.subject);
+            // Abrimos el modal en modo edición, pasándole los datos
+            // de la materia para prellenar los campos.
+        } else {
+            alert(data.error);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+// =====================================================
+// ELIMINAR UNA MATERIA
+// =====================================================
+async function deleteSubject(id) {
+    const confirmed = confirm('¿Estás seguro de que quieres eliminar esta materia? Se eliminarán también sus tareas y clases.');
+    // confirm() → Muestra un cuadro de diálogo con "Aceptar" y "Cancelar".
+    // Retorna true si el usuario hace clic en Aceptar.
+    // Retorna false si hace clic en Cancelar.
+    //
+    // Esto previene eliminaciones accidentales.
+
+    if (!confirmed) return;
+    // Si no confirmó, no hacemos nada.
+
+    try {
+        const response = await fetchWithAuth(`/api/subjects/${id}`, {
+            method: 'DELETE'
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            loadSubjects();
+            // Recargamos la lista para que la materia eliminada desaparezca.
+        } else {
+            alert(data.error);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error al eliminar la materia');
+    }
+}
+
+// =====================================================
+// INICIALIZAR
+// =====================================================
+createSubjectModal();
+// Creamos el modal al cargar la página (está oculto por defecto).
+
+addSubjectBtn.addEventListener('click', () => openSubjectModal());
+// Al hacer clic en "+ Nueva Materia", abrimos el modal en modo creación.
+
+loadSubjects();
+// Cargamos las materias del usuario al iniciar.

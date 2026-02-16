@@ -401,3 +401,68 @@ body {
 .btn-submit:hover {
     background-color: #2563eb;
 }
+
+/* --- SELECTOR DE COLOR --- */
+.color-picker {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* flex-wrap: wrap → Si los colores no caben en una línea,
+   bajan a la siguiente. Sin esto, se comprimirían o
+   desbordarían del contenedor. */
+
+.color-option {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: all 0.2s ease;
+}
+
+/* border-radius: 50% → Convierte un cuadrado en un círculo perfecto.
+   border: 3px solid transparent → Borde invisible que reserva espacio.
+   Cuando se seleccione, cambiaremos el color del borde. Si no
+   reserváramos el espacio, el elemento "saltaría" al seleccionarse. */
+
+.color-option:hover {
+    transform: scale(1.15);
+}
+
+/* scale(1.15) → Agranda el elemento al 115% de su tamaño original. */
+
+.color-option.selected {
+    border-color: white;
+    transform: scale(1.15);
+}
+
+/* --- ACCIONES DE MATERIA --- */
+.subject-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.btn-edit,
+.btn-delete {
+    padding: 5px 10px;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    background-color: transparent;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s ease;
+}
+
+.btn-edit:hover {
+    border-color: #3b82f6;
+    color: #3b82f6;
+}
+
+.btn-delete:hover {
+    border-color: #ef4444;
+    color: #ef4444;
+}

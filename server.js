@@ -17,6 +17,7 @@ const path = require('path');
 // --- 3. Importar rutas ---
 const authRoutes = require('./src/routes/authRoutes');
 const userRoutes = require('./src/routes/userRoutes');
+const subjectRoutes = require('./src/routes/subjectRoutes');
 
 // --- 4. Crear la aplicación ---
 const app = express();
@@ -62,6 +63,8 @@ app.use('/api/user', userRoutes);
 // Nota la diferencia:
 //   /api/auth/*  → Rutas PÚBLICAS (login, register). Cualquiera puede acceder.
 //   /api/user/*  → Rutas PROTEGIDAS. Solo usuarios con token válido.
+
+app.use('/api/subjects', subjectRoutes);
 
 // --- 7. Ruta principal ---
 app.get('/', (req, res) => {
