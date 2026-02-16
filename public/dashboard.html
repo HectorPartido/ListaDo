@@ -1,0 +1,78 @@
+<!--
+  public/dashboard.html — Panel principal del usuario
+  
+  Esta página solo es accesible después de iniciar sesión.
+  Aquí el usuario verá sus materias, tareas y clases.
+-->
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ListToDo - Dashboard</title>
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+
+<body>
+
+    <!-- ==================== BARRA DE NAVEGACIÓN ==================== -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <h1>ListToDo 📝</h1>
+        </div>
+        <!-- nav-brand → La sección izquierda del navbar con el logo/nombre -->
+
+        <div class="nav-user">
+            <span id="user-name">Cargando...</span>
+            <!-- Aquí mostraremos el nombre del usuario con JavaScript.
+           Empieza con "Cargando..." mientras se obtienen los datos. -->
+
+            <button id="logout-btn" class="btn-logout">Cerrar Sesión</button>
+        </div>
+    </nav>
+
+    <!-- ==================== CONTENIDO PRINCIPAL ==================== -->
+    <main class="main-content">
+
+        <!-- --- PANEL DE BIENVENIDA Y RESUMEN --- -->
+        <section class="welcome-section">
+            <h2>¡Bienvenido, <span id="welcome-name">estudiante</span>! 👋</h2>
+            <p class="welcome-text">Aquí puedes gestionar tus materias, tareas y apuntes de clase.</p>
+        </section>
+        <!-- <section> es una etiqueta semántica que agrupa contenido
+         relacionado. Es como un <div> pero con significado:
+         le dice al navegador "esto es una sección del contenido". -->
+
+        <!-- --- PANEL DE TAREAS PRÓXIMAS --- -->
+        <section class="upcoming-section">
+            <div class="section-header">
+                <h3>📅 Tareas próximas a entregar</h3>
+            </div>
+            <div id="upcoming-tasks" class="upcoming-list">
+                <p class="empty-message">No tienes tareas próximas. ¡Bien hecho! 🎉</p>
+            </div>
+        </section>
+        <!-- Este panel mostrará las tareas más cercanas a su fecha de
+         entrega, sin importar la materia. Lo llenaremos con datos
+         reales cuando creemos el módulo de tareas. -->
+
+        <!-- --- PANEL DE MATERIAS --- -->
+        <section class="subjects-section">
+            <div class="section-header">
+                <h3>📚 Mis Materias</h3>
+                <button id="add-subject-btn" class="btn-add">+ Nueva Materia</button>
+                <!-- Este botón abrirá un formulario para crear materias.
+             Lo conectaremos en el Módulo 4. -->
+            </div>
+            <div id="subjects-list" class="subjects-grid">
+                <p class="empty-message">Aún no tienes materias. ¡Crea tu primera materia!</p>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="/js/dashboard.js"></script>
+</body>
+
+</html>

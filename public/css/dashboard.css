@@ -1,0 +1,403 @@
+/* ============================================
+   public/css/dashboard.css — Estilos del Dashboard
+   ============================================ */
+
+/* --- RESET Y BASE --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #0f172a;
+    color: #e2e8f0;
+    min-height: 100vh;
+}
+
+/* A diferencia del login, aquí NO centramos el body porque
+   el dashboard ocupa toda la pantalla, no es una tarjeta centrada. */
+
+/* --- BARRA DE NAVEGACIÓN --- */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background-color: #1e293b;
+    border-bottom: 1px solid #334155;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+/* justify-content: space-between → Empuja los elementos hijos
+   a los extremos (logo a la izquierda, usuario a la derecha).
+   Es como poner un resorte entre ellos.
+   
+   position: sticky → El navbar se "pega" arriba cuando haces scroll.
+   Siempre visible sin importar cuánto bajes en la página.
+   
+   top: 0 → Se pega al borde superior de la ventana.
+   
+   z-index: 100 → Controla qué elemento está "encima" de otro.
+   Un z-index alto asegura que el navbar esté por encima
+   de cualquier otro contenido cuando haces scroll. */
+
+.nav-brand h1 {
+    font-size: 1.3rem;
+    color: #3b82f6;
+}
+
+.nav-user {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.nav-user span {
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
+
+.btn-logout {
+    padding: 8px 16px;
+    background-color: transparent;
+    color: #ef4444;
+    border: 1px solid #ef4444;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+}
+
+.btn-logout:hover {
+    background-color: #ef4444;
+    color: white;
+}
+
+/* Al pasar el mouse, el botón se llena de rojo.
+   La transición hace que el cambio sea suave (0.3 segundos). */
+
+/* --- CONTENIDO PRINCIPAL --- */
+.main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px;
+}
+
+/* max-width: 1200px → El contenido no será más ancho que 1200px.
+   En pantallas grandes, esto evita que el texto se estire
+   de lado a lado (dificulta la lectura).
+   
+   margin: 0 auto → 0 arriba/abajo, auto izquierda/derecha.
+   "auto" calcula automáticamente márgenes iguales a ambos lados,
+   lo que CENTRA el contenedor horizontalmente. */
+
+/* --- SECCIÓN DE BIENVENIDA --- */
+.welcome-section {
+    margin-bottom: 30px;
+}
+
+.welcome-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+}
+
+.welcome-text {
+    color: #94a3b8;
+}
+
+/* --- ENCABEZADOS DE SECCIÓN --- */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.section-header h3 {
+    font-size: 1.2rem;
+}
+
+.btn-add {
+    padding: 8px 16px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background-color 0.3s ease;
+}
+
+.btn-add:hover {
+    background-color: #2563eb;
+}
+
+/* --- SECCIÓN DE TAREAS PRÓXIMAS --- */
+.upcoming-section {
+    background-color: #1e293b;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 30px;
+    border: 1px solid #334155;
+}
+
+.upcoming-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* --- TARJETA DE TAREA PRÓXIMA --- */
+.task-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #0f172a;
+    padding: 15px 20px;
+    border-radius: 8px;
+    border-left: 4px solid #3b82f6;
+    transition: transform 0.2s ease;
+}
+
+/* border-left: 4px solid → Una línea de color en el borde izquierdo.
+   Esto crea un indicador visual del tipo o prioridad de la tarea.
+   
+   transition: transform → Animará cambios de posición/tamaño. */
+
+.task-card:hover {
+    transform: translateX(5px);
+}
+
+/* translateX(5px) → Mueve la tarjeta 5px a la derecha al pasar
+   el mouse. Da un efecto sutil de interactividad. */
+
+.task-card.priority-high {
+    border-left-color: #ef4444;
+}
+
+/* Rojo para prioridad alta */
+
+.task-card.priority-medium {
+    border-left-color: #f59e0b;
+}
+
+/* Amarillo/naranja para prioridad media */
+
+.task-card.priority-low {
+    border-left-color: #22c55e;
+}
+
+/* Verde para prioridad baja */
+
+.task-info h4 {
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+}
+
+.task-meta {
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+
+.task-date {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    text-align: right;
+}
+
+.task-date strong {
+    display: block;
+    color: #e2e8f0;
+    font-size: 0.95rem;
+}
+
+/* --- GRID DE MATERIAS --- */
+.subjects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+/* display: grid → Activa CSS Grid, un sistema de diseño en cuadrícula.
+   Es perfecto para layouts de tarjetas.
+   
+   grid-template-columns → Define cuántas columnas y de qué tamaño.
+   
+   repeat(auto-fill, minmax(280px, 1fr)) → Esto es poderoso:
+     auto-fill → Crea tantas columnas como quepan
+     minmax(280px, 1fr) → Cada columna mide mínimo 280px y máximo
+       1fr (fracción del espacio disponible).
+   
+   El resultado: en pantallas grandes tendrás 3-4 columnas,
+   en tablet 2 columnas, en celular 1 columna.
+   ¡TODO AUTOMÁTICO, sin media queries!
+   
+   gap: 20px → Espacio entre las tarjetas de la cuadrícula. */
+
+/* --- TARJETA DE MATERIA --- */
+.subject-card {
+    background-color: #1e293b;
+    border-radius: 12px;
+    padding: 25px;
+    border: 1px solid #334155;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.subject-card:hover {
+    border-color: #3b82f6;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* translateY(-3px) → Mueve la tarjeta 3px hacia ARRIBA.
+   Junto con la sombra, da la ilusión de que la tarjeta
+   "se levanta" cuando pasas el mouse. */
+
+.subject-color {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+/* Un cuadradito de color que identificará cada materia visualmente. */
+
+.subject-card h4 {
+    font-size: 1.05rem;
+    margin-bottom: 8px;
+}
+
+.subject-stats {
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+
+/* --- MENSAJES VACÍOS --- */
+.empty-message {
+    color: #64748b;
+    font-style: italic;
+    text-align: center;
+    padding: 20px;
+}
+
+/* --- MODAL (ventana flotante) --- */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
+}
+
+/* position: fixed → Se posiciona relativo a la VENTANA del navegador,
+   no al contenido. Se queda fija aunque hagas scroll.
+   
+   Con top:0, left:0, width:100%, height:100% cubre TODA la pantalla.
+   
+   background-color: rgba(0,0,0,0.6) → Fondo negro semitransparente.
+   Esto oscurece el contenido detrás del modal para enfocar
+   la atención en la ventana flotante.
+   
+   z-index: 200 → Más alto que el navbar (100) para estar encima de todo. */
+
+.modal-overlay.active {
+    display: flex;
+}
+
+/* Cuando le agregamos la clase "active", se muestra con display: flex
+   (flex para que el contenido se centre gracias a justify/align). */
+
+.modal-content {
+    background-color: #1e293b;
+    padding: 30px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 450px;
+    border: 1px solid #334155;
+}
+
+.modal-content h3 {
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+}
+
+.modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.modal-form label {
+    font-size: 0.85rem;
+    color: #94a3b8;
+}
+
+.modal-form input,
+.modal-form select {
+    padding: 10px 14px;
+    border: 2px solid #334155;
+    border-radius: 8px;
+    background-color: #0f172a;
+    color: #e2e8f0;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+/* Listamos dos selectores separados por coma:
+   .modal-form input, .modal-form select
+   Esto aplica los mismos estilos a AMBOS tipos de elementos.
+   "select" es el elemento de lista desplegable (<select>). */
+
+.modal-form input:focus,
+.modal-form select:focus {
+    border-color: #3b82f6;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.btn-cancel {
+    flex: 1;
+    padding: 10px;
+    background-color: transparent;
+    color: #94a3b8;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+    border-color: #94a3b8;
+    color: #e2e8f0;
+}
+
+.btn-submit {
+    flex: 1;
+    padding: 10px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+.btn-submit:hover {
+    background-color: #2563eb;
+}
