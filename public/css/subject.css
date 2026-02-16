@@ -1,0 +1,279 @@
+/* ============================================
+   public/css/subject.css — Estilos de la página de materia
+   ============================================ */
+
+/* --- LINK DE VOLVER --- */
+.back-link {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.85rem;
+    margin-right: 15px;
+    transition: color 0.2s ease;
+}
+
+/* text-decoration: none → Quita el subrayado del enlace.
+   Los <a> por defecto tienen subrayado. */
+
+.back-link:hover {
+    color: #3b82f6;
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+}
+
+/* --- PESTAÑAS --- */
+.tabs {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #1e293b;
+    padding-bottom: 0;
+}
+
+.tab-btn {
+    padding: 10px 20px;
+    background-color: transparent;
+    color: #94a3b8;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    margin-bottom: -2px;
+}
+
+/* margin-bottom: -2px → Un truco para que el borde inferior
+   del botón activo se superponga con el borde del contenedor.
+   Crea la ilusión de que la pestaña está "conectada" con el contenido. */
+
+.tab-btn.active {
+    color: #3b82f6;
+    border-bottom-color: #3b82f6;
+}
+
+.tab-btn:hover {
+    color: #e2e8f0;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* --- FILTROS --- */
+.filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.filter-btn {
+    padding: 6px 14px;
+    background-color: #1e293b;
+    color: #94a3b8;
+    border: 1px solid #334155;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    transition: all 0.2s ease;
+}
+
+/* border-radius: 20px → Con un valor alto en un elemento pequeño,
+   crea la forma de "píldora" (pill shape). Es un patrón muy
+   usado para chips/tags de filtro. */
+
+.filter-btn.active {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+}
+
+.filter-btn:hover {
+    border-color: #3b82f6;
+}
+
+/* --- LISTA DE TAREAS --- */
+.tasks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* --- TARJETA DE TAREA --- */
+.task-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    background-color: #1e293b;
+    padding: 18px;
+    border-radius: 10px;
+    border: 1px solid #334155;
+    transition: all 0.2s ease;
+}
+
+/* align-items: flex-start → Alinea los hijos al inicio (arriba).
+   A diferencia de "center" que los centra verticalmente,
+   flex-start los alinea desde arriba. Útil cuando los hijos
+   tienen diferentes alturas. */
+
+.task-item:hover {
+    border-color: #475569;
+}
+
+.task-item.completed {
+    opacity: 0.5;
+}
+
+/* opacity: 0.5 → Hace el elemento 50% transparente.
+   1 = totalmente visible, 0 = invisible.
+   Así las tareas completadas se ven "desvanecidas". */
+
+/* --- CHECKBOX PERSONALIZADO --- */
+.task-checkbox {
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    border: 2px solid #475569;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+    transition: all 0.2s ease;
+}
+
+/* min-width: 22px → Evita que el checkbox se encoja
+   cuando el texto de la tarea es muy largo. Sin esto,
+   flexbox podría comprimirlo. */
+
+.task-checkbox:hover {
+    border-color: #3b82f6;
+}
+
+.task-checkbox.checked {
+    background-color: #22c55e;
+    border-color: #22c55e;
+}
+
+.task-checkbox.checked::after {
+    content: '✓';
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* ::after → Pseudo-elemento que inserta contenido DESPUÉS
+   del contenido real del elemento.
+   content: '✓' → Muestra una palomita.
+   Así creamos un checkbox visual sin usar el <input type="checkbox">
+   nativo (que es difícil de personalizar). */
+
+/* --- CONTENIDO DE LA TAREA --- */
+.task-content {
+    flex: 1;
+}
+
+/* flex: 1 → Ocupa todo el espacio disponible restante.
+   El checkbox tiene un ancho fijo (22px), y el contenido
+   se expande para llenar el resto. */
+
+.task-content h4 {
+    font-size: 0.95rem;
+    margin-bottom: 6px;
+}
+
+.task-item.completed .task-content h4 {
+    text-decoration: line-through;
+    color: #64748b;
+}
+
+/* text-decoration: line-through → Tacha el texto.
+   Esto es el indicador visual clásico de "completado". */
+
+.task-description {
+    font-size: 0.82rem;
+    color: #94a3b8;
+    margin-bottom: 8px;
+}
+
+.task-dates {
+    display: flex;
+    gap: 15px;
+    font-size: 0.78rem;
+    color: #64748b;
+}
+
+.task-priority {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+/* text-transform: uppercase → Convierte el texto a MAYÚSCULAS.
+   "high" se muestra como "HIGH". Útil para badges/etiquetas. */
+
+.task-priority.high {
+    background-color: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.task-priority.medium {
+    background-color: rgba(245, 158, 11, 0.2);
+    color: #f59e0b;
+}
+
+.task-priority.low {
+    background-color: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
+
+/* rgba con opacidad baja (0.2) crea un fondo suave del mismo
+   color que el texto, dando un efecto de "badge" elegante. */
+
+/* --- ACCIONES DE TAREA --- */
+.task-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.task-actions button {
+    padding: 4px 8px;
+    background: transparent;
+    border: 1px solid #334155;
+    border-radius: 4px;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.task-actions .btn-edit:hover {
+    border-color: #3b82f6;
+    color: #3b82f6;
+}
+
+.task-actions .btn-delete:hover {
+    border-color: #ef4444;
+    color: #ef4444;
+}
+
+/* --- FECHA VENCIDA --- */
+.overdue {
+    color: #ef4444 !important;
+    font-weight: 600;
+}
+
+/* !important → Fuerza que este estilo tenga prioridad sobre otros.
+   Se usa con moderación porque puede dificultar el mantenimiento.
+   Aquí lo usamos para que el color rojo siempre gane,
+   sin importar qué otros estilos se apliquen. */

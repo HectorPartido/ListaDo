@@ -142,6 +142,95 @@ verifyAuth();
 // Si no, el usuario es redirigido al login.
 
 // =====================================================
+// CARGAR TAREAS PRÓXIMAS EN EL DASHBOARD
+// =====================================================
+async function loadUpcomingTasks() {
+    try {
+        const response = await fetchWithAuth('/api/tasks/upcoming');
+        const data = await response.json();
+
+        if (!response.ok) return;
+
+        const container = document.getElementById('upcoming-tasks');
+
+        if (data.tasks.length === 0) {
+            container.innerHTML = `<p class="empty-message">No tienes tareas próximas. ¡Bien hecho! 🎉</p>`;
+            return;
+        }
+
+        container.innerHTML = data.tasks.map(task => {
+            const dueDate = new Date(task.due_date + 'T00:00:00');
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const isOverdue = dueDate < today;
+
+            const dueDateFormatted = dueDate.toLocaleDateString('es-MX', {
+                day: 'numeric',
+                month: 'short'
+            });
+
+            // Calcular días restantes
+            const diffTime = dueDate.getTime() - today.getTime();
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            // getTime() → Retorna la fecha en milisegundos desde el 1 de
+            //   enero de 1970 (el "epoch" de Unix). Permite hacer aritmética.
+            //
+            // La resta nos da la diferencia en milisegundos.
+            //
+            // Dividimos entre (1000 * 60 * 60 * 24) para convertir:
+            //   1000ms = 1 segundo
+            //   × 60   = 1 minuto
+            //   × 60   = 1 hora
+            //   × 24   = 1 día
+            //
+            // Math.ceil() → Redondea hacia ARRIBA al entero más cercano.
+            //   Math.ceil(2.1) → 3
+            //   Math.ceil(2.9) → 3
+            //   Math.ceil(3.0) → 3
+
+            let daysText;
+            if (diffDays < 0) {
+                daysText = `¡Vencida hace ${Math.abs(diffDays)} día(s)!`;
+            } else if (diffDays === 0) {
+                daysText = '¡Entrega HOY!';
+            } else if (diffDays === 1) {
+                daysText = 'Entrega mañana';
+            } else {
+                daysText = `Faltan ${diffDays} días`;
+            }
+            // Math.abs() → Valor absoluto. Convierte negativos en positivos.
+            // Math.abs(-3) → 3
+
+            // Nombre de la materia (viene del JOIN en el backend)
+            const subjectName = task.subjects ? task.subjects.name : 'Sin materia';
+            const subjectColor = task.subjects ? task.subjects.color : '#3b82f6';
+
+            return `
+        <div class="task-card priority-${task.priority}">
+            <div class="task-info">
+            <span style="color: ${subjectColor}; font-size: 0.75rem; font-weight: 600;">
+                ${subjectName}
+            </span>
+            <h4>${task.title}</h4>
+            <span class="task-meta">${daysText}</span>
+            </div>
+            <div class="task-date">
+            <strong>${dueDateFormatted}</strong>
+            <span class="${isOverdue ? 'overdue' : ''}">${task.priority}</span>
+            </div>
+        </div>
+    `;
+        }).join('');
+
+    } catch (error) {
+        console.error('Error al cargar tareas próximas:', error);
+    }
+}
+
+loadUpcomingTasks();
+
+// =====================================================
 // GESTIÓN DE MATERIAS
 // =====================================================
 
@@ -428,50 +517,49 @@ async function loadSubjects() {
 }
 
 function renderSubjects(subjects) {
-    // Esta función recibe el array de materias y genera el HTML.
-    // Cada vez que se llama, REEMPLAZA todo el contenido anterior.
-
     if (subjects.length === 0) {
         subjectsList.innerHTML = `
-      <p class="empty-message">Aún no tienes materias. ¡Crea tu primera materia!</p>
+        <p class="empty-message">Aún no tienes materias. ¡Crea tu primera materia!</p>
     `;
         return;
     }
-    // .innerHTML → Reemplaza TODO el contenido HTML interno del elemento.
-    // A diferencia de .textContent (que solo maneja texto plano),
-    // .innerHTML interpreta las etiquetas HTML.
 
     subjectsList.innerHTML = subjects.map(subject => `
     <div class="subject-card" data-id="${subject.id}">
-      <div class="subject-color" style="background-color: ${subject.color}"></div>
-      <h4>${subject.name}</h4>
-      <p class="subject-stats">
-        📝 Tareas: 0 &nbsp;|&nbsp; 📖 Clases: 0
-      </p>
-      <div class="subject-actions">
-        <button class="btn-edit" onclick="editSubject('${subject.id}')">✏️ Editar</button>
-        <button class="btn-delete" onclick="deleteSubject('${subject.id}')">🗑️ Eliminar</button>
-      </div>
+        <div class="subject-color" style="background-color: ${subject.color}"></div>
+        <h4>${subject.name}</h4>
+        <p class="subject-stats">
+        📝 Tareas &nbsp;|&nbsp; 📖 Clases
+        </p>
+        <div class="subject-actions">
+        <button class="btn-edit" onclick="event.stopPropagation(); editSubject('${subject.id}')">✏️ Editar</button>
+        <button class="btn-delete" onclick="event.stopPropagation(); deleteSubject('${subject.id}')">🗑️ Eliminar</button>
+        </div>
     </div>
-  `).join('');
-    // .map() → Transforma cada elemento del array en otra cosa.
-    // Aquí transformamos cada objeto "subject" en un string de HTML.
+`).join('');
+
+    // --- HACER LAS TARJETAS CLICKEABLES ---
+    document.querySelectorAll('.subject-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const id = card.dataset.id;
+            window.location.href = `/subject.html?id=${id}`;
+        });
+    });
+    // Al hacer clic en una tarjeta de materia, navegamos a la
+    // página de detalle pasando el id en la URL.
     //
-    // Ejemplo: si subjects = [{ name: "Mate", color: "#3b82f6" }]
-    // .map() retorna: ['<div class="subject-card">...Mate...</div>']
+    // event.stopPropagation() en los botones de editar/eliminar
+    // evita que el clic "burbujee" hasta la tarjeta.
     //
-    // .join('') → Une todos los strings del array en uno solo.
-    // Sin .join(), innerHTML recibiría un array, no un string.
-    // El argumento '' (string vacío) significa "une sin separador".
-    //   ['<div>A</div>', '<div>B</div>'].join('')
-    //   → '<div>A</div><div>B</div>'
+    // ¿Qué es "burbujeo" (bubbling)?
+    // Cuando haces clic en un botón que está DENTRO de la tarjeta,
+    // el evento de clic se propaga hacia arriba: primero el botón,
+    // luego la tarjeta, luego el body... Es el comportamiento
+    // por defecto del DOM.
     //
-    // onclick="editSubject('...')" → Ejecuta la función cuando
-    // se hace clic en el botón. Pasamos el id de la materia.
-    //
-    // &nbsp; → "Non-breaking space" (espacio que no se rompe).
-    // Es un carácter HTML que se muestra como espacio.
-    // Se usa para agregar separación visual entre elementos en línea.
+    // stopPropagation() detiene esa propagación. Sin esto,
+    // al hacer clic en "Editar", también se activaría el clic
+    // de la tarjeta y te llevaría a la página de detalle.
 }
 
 // =====================================================

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ListToDo - Materia</title>
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/subject.css">
+    <!-- Reutilizamos los estilos del dashboard y agregamos específicos -->
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="/dashboard.html" class="back-link">← Volver</a>
+            <h1 id="subject-title">Cargando...</h1>
+        </div>
+        <div class="nav-user">
+            <span id="user-name">Cargando...</span>
+            <button id="logout-btn" class="btn-logout">Cerrar Sesión</button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+
+        <!-- ==================== PESTAÑAS ==================== -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="tasks">📝 Tareas</button>
+            <button class="tab-btn" data-tab="classes">📖 Clases</button>
+        </div>
+        <!-- Las pestañas permiten alternar entre la vista de tareas
+         y la de clases (que implementaremos en el Módulo 7).
+         data-tab guarda a qué contenido corresponde cada pestaña. -->
+
+        <!-- ==================== CONTENIDO: TAREAS ==================== -->
+        <section id="tasks-tab" class="tab-content active">
+            <div class="section-header">
+                <h3>Tareas</h3>
+                <button id="add-task-btn" class="btn-add">+ Nueva Tarea</button>
+            </div>
+
+            <!-- FILTROS -->
+            <div class="filters">
+                <button class="filter-btn active" data-filter="pending">Pendientes</button>
+                <button class="filter-btn" data-filter="completed">Completadas</button>
+                <button class="filter-btn" data-filter="all">Todas</button>
+            </div>
+
+            <div id="tasks-list" class="tasks-list">
+                <p class="empty-message">No hay tareas aún. ¡Crea tu primera tarea!</p>
+            </div>
+        </section>
+
+        <!-- ==================== CONTENIDO: CLASES (placeholder) ==================== -->
+        <section id="classes-tab" class="tab-content">
+            <div class="section-header">
+                <h3>Clases</h3>
+                <button id="add-class-btn" class="btn-add">+ Nueva Clase</button>
+            </div>
+            <div id="classes-list">
+                <p class="empty-message">Las clases se implementarán en el siguiente módulo 📚</p>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="/js/subject.js"></script>
+</body>
+
+</html>
