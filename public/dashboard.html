@@ -18,18 +18,26 @@ Aquí el usuario verá sus materias, tareas y clases.
     <!-- ==================== BARRA DE NAVEGACIÓN ==================== -->
     <nav class="navbar">
         <div class="nav-brand">
-            <h1>ListaDo 📝</h1>
+            <h1>ListToDo 📝</h1>
         </div>
-        <!-- nav-brand → La sección izquierda del navbar con el logo/nombre -->
 
         <div class="nav-user">
             <span id="user-name">Cargando...</span>
-            <!-- Aquí mostraremos el nombre del usuario con JavaScript.
-           Empieza con "Cargando..." mientras se obtienen los datos. -->
-
             <button id="logout-btn" class="btn-logout">Cerrar Sesión</button>
         </div>
+
+        <!-- Botón hamburguesa para móvil -->
+        <button id="mobile-menu-btn" class="mobile-menu-btn">☰</button>
+        <!-- Este botón solo será visible en celulares.
+         El símbolo ☰ es el ícono estándar de "menú hamburguesa".
+         En escritorio estará oculto (display: none). -->
     </nav>
+
+    <!-- Menú desplegable para móvil -->
+    <div id="mobile-menu" class="mobile-menu">
+        <span id="mobile-user-name" class="mobile-user-name"></span>
+        <button id="mobile-logout-btn" class="btn-logout">Cerrar Sesión</button>
+    </div>
 
     <!-- ==================== CONTENIDO PRINCIPAL ==================== -->
     <main class="main-content">

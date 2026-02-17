@@ -466,3 +466,209 @@ body {
     border-color: #ef4444;
     color: #ef4444;
 }
+
+/* ============================================
+   RESPONSIVE — Dashboard
+   ============================================ */
+
+/* --- TABLETS (768px o menos) --- */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 12px 15px;
+    }
+
+    .nav-brand h1 {
+        font-size: 1.1rem;
+    }
+
+    .nav-user span {
+        display: none;
+    }
+
+    /* Ocultamos el nombre del usuario en el navbar para tablets
+     y celulares. Ahorra espacio horizontal. El nombre ya aparece
+     en el saludo del dashboard. */
+
+    .main-content {
+        padding: 20px 15px;
+    }
+
+    .welcome-section h2 {
+        font-size: 1.25rem;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    /* En pantallas pequeñas, el título y el botón "+ Nueva Materia"
+     se apilan verticalmente en vez de estar lado a lado.
+     
+     align-items: flex-start → Ambos alineados a la izquierda.
+     
+     gap: 10px → Espacio entre el título y el botón. */
+
+    .subjects-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Forzamos una sola columna en tablets.
+     1fr = una fracción = 100% del ancho.
+     Así las tarjetas de materia ocupan todo el ancho. */
+
+    /* --- MODAL --- */
+    .modal-content {
+        margin: 15px;
+        max-width: calc(100% - 30px);
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    /* calc(100% - 30px) → Función CSS que hace cálculos.
+     100% del ancho menos 30px de margen (15px por lado).
+     
+     max-height: 90vh → El modal no puede ser más alto que
+     el 90% de la pantalla. Si el contenido es más largo,
+     aparece scroll.
+     
+     overflow-y: auto → Muestra una barra de scroll vertical
+     solo si el contenido sobrepasa el max-height.
+     "y" se refiere al eje vertical. */
+
+    /* --- TARJETA DE TAREA PRÓXIMA --- */
+    .task-card {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .task-date {
+        text-align: left;
+    }
+}
+
+/* --- CELULARES (480px o menos) --- */
+@media (max-width: 480px) {
+    .navbar {
+        padding: 10px 12px;
+    }
+
+    .nav-brand h1 {
+        font-size: 1rem;
+    }
+
+    .btn-logout {
+        padding: 6px 10px;
+        font-size: 0.78rem;
+    }
+
+    .main-content {
+        padding: 15px 10px;
+    }
+
+    .welcome-section h2 {
+        font-size: 1.1rem;
+    }
+
+    .welcome-text {
+        font-size: 0.85rem;
+    }
+
+    .upcoming-section {
+        padding: 15px;
+    }
+
+    .btn-add {
+        width: 100%;
+        text-align: center;
+        padding: 10px;
+    }
+
+    /* En celulares, el botón de nueva materia ocupa todo el ancho.
+     Esto lo hace más fácil de tocar con el dedo (target más grande). */
+
+    .subject-card {
+        padding: 18px;
+    }
+
+    /* --- MODAL CELULAR --- */
+    .modal-content {
+        margin: 10px;
+        padding: 20px 15px;
+        max-width: calc(100% - 20px);
+        border-radius: 10px;
+    }
+
+    .modal-content h3 {
+        font-size: 1.05rem;
+    }
+
+    .modal-actions {
+        flex-direction: column;
+    }
+
+    /* Los botones "Cancelar" y "Guardar" se apilan verticalmente
+     en celulares para que sean más fáciles de tocar. */
+
+    .color-picker {
+        justify-content: center;
+    }
+
+    /* Centra los botones de color en celulares. */
+}
+
+/* ============================================
+   MENÚ MÓVIL (HAMBURGUESA)
+   ============================================ */
+.mobile-menu-btn {
+    display: none;
+    background: transparent;
+    border: 1px solid #334155;
+    color: #e2e8f0;
+    font-size: 1.3rem;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* display: none → Oculto por defecto en escritorio.
+   Solo se muestra en celulares con la media query. */
+
+.mobile-menu {
+    display: none;
+    padding: 15px;
+    background-color: #1e293b;
+    border-bottom: 1px solid #334155;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.mobile-menu.active {
+    display: flex;
+}
+
+.mobile-user-name {
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
+
+/* --- MOSTRAR MENÚ HAMBURGUESA EN CELULARES --- */
+@media (max-width: 640px) {
+    .nav-user {
+        display: none;
+    }
+
+    /* Ocultamos el menú normal de escritorio. */
+
+    .mobile-menu-btn {
+        display: block;
+    }
+
+    /* Mostramos el botón hamburguesa. */
+}
+
+/* 640px es un breakpoint intermedio. En tablets (641-768px)
+   mostramos el botón normal. En celulares (640px o menos)
+   mostramos el menú hamburguesa. */

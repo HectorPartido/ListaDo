@@ -203,6 +203,65 @@ necesitemos mostrar un mensaje de éxito o error. */
     border: 1px solid #991b1b;
 }
 
-/* display: block → Hace visible el elemento.
-Cuando JS le agregue la clase "success" o "error",
-el mensaje aparecerá con el color correspondiente. */
+/* ============================================
+   RESPONSIVE — Página de Login
+   ============================================ */
+
+/* --- TABLETS Y CELULARES (768px o menos) --- */
+@media (max-width: 768px) {
+    .container {
+        margin: 20px;
+        padding: 30px 20px;
+    }
+}
+
+/* @media → Es una "media query". Es una regla condicional:
+   "aplica estos estilos SOLO cuando se cumpla la condición".
+   
+   (max-width: 768px) → "cuando el ancho de la ventana sea
+   768px o menos". 768px es el ancho típico de una tablet
+   en modo vertical.
+   
+   Dentro del bloque, redefinimos estilos que necesitan cambiar.
+   Los estilos que no listemos aquí se mantienen igual.
+   
+   margin: 20px → Agrega un margen alrededor del contenedor
+   para que no pegue con los bordes de la pantalla.
+   
+   padding: 30px 20px → Reducimos el padding interno porque
+   en pantallas pequeñas el espacio es valioso. */
+
+/* --- CELULARES PEQUEÑOS (480px o menos) --- */
+@media (max-width: 480px) {
+    body {
+        align-items: flex-start;
+        padding-top: 40px;
+    }
+
+    /* En celulares muy pequeños, en vez de centrar verticalmente,
+     alineamos al inicio (arriba) con un poco de padding.
+     Esto evita que en celulares con teclado virtual la tarjeta
+     quede cortada o inaccesible. */
+
+    .container {
+        margin: 10px;
+        padding: 25px 15px;
+        border-radius: 12px;
+    }
+
+    h1 {
+        font-size: 1.6rem;
+    }
+
+    .form-toggle {
+        flex-direction: column;
+    }
+
+    /* flex-direction: column → Los botones de "Iniciar Sesión" y
+     "Registrarse" se apilan verticalmente en vez de estar
+     lado a lado. Esto les da más espacio en pantallas angostas. */
+
+    .toggle-btn {
+        padding: 12px;
+    }
+}

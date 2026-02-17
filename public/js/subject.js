@@ -403,6 +403,26 @@ document.getElementById('logout-btn').addEventListener('click', () => {
     window.location.href = '/';
 });
 
+// --- MENÚ MÓVIL ---
+const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+const mobileMenu = document.getElementById('mobile-menu');
+const mobileUserName = document.getElementById('mobile-user-name');
+const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
+
+if (mobileMenuBtn && mobileMenu) {
+    mobileUserName.textContent = user.name;
+
+    mobileMenuBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('active');
+    });
+
+    mobileLogoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/';
+    });
+}
+
 // =====================================================
 // NAVEGAR A UNA CLASE VINCULADA
 // =====================================================

@@ -68,6 +68,29 @@ document.getElementById('logout-btn').addEventListener('click', () => {
     window.location.href = '/';
 });
 
+// --- MENÚ MÓVIL ---
+const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+const mobileMenu = document.getElementById('mobile-menu');
+const mobileUserName = document.getElementById('mobile-user-name');
+const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
+
+if (mobileMenuBtn && mobileMenu) {
+    mobileUserName.textContent = user.name;
+
+    mobileMenuBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('active');
+    });
+    // .toggle('active') → Si la clase está presente, la quita.
+    //   Si no está presente, la agrega. Es un interruptor (on/off).
+    //   Perfecto para abrir/cerrar menús.
+
+    mobileLogoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/';
+    });
+}
+
 // --- 7. INICIALIZAR ---
 verifyAuth();
 

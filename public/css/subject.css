@@ -505,3 +505,334 @@
 .linked-class:hover {
     text-decoration: underline;
 }
+
+/* ============================================
+   RESPONSIVE — Página de Materia
+   ============================================ */
+
+/* --- TABLETS (768px o menos) --- */
+@media (max-width: 768px) {
+    .nav-brand {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+    }
+
+    /* El enlace "← Volver" y el título de la materia se apilan
+     verticalmente en vez de estar en la misma línea. */
+
+    .back-link {
+        font-size: 0.78rem;
+    }
+
+    .nav-brand h1 {
+        font-size: 1rem;
+    }
+
+    .tabs {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* overflow-x: auto → Si las pestañas no caben en el ancho,
+     permite hacer scroll horizontal.
+     
+     -webkit-overflow-scrolling: touch → Hace que el scroll
+     horizontal sea suave en dispositivos iOS (iPhone/iPad).
+     Sin esto, el scroll se siente "pegajoso" en Safari. */
+
+    .tab-btn {
+        white-space: nowrap;
+        font-size: 0.88rem;
+        padding: 8px 15px;
+    }
+
+    /* white-space: nowrap → Evita que el texto de la pestaña
+     se parta en dos líneas. "📝 Tareas" siempre en una línea. */
+
+    .filters {
+        overflow-x: auto;
+        padding-bottom: 5px;
+    }
+
+    .filter-btn {
+        white-space: nowrap;
+    }
+
+    /* --- TAREAS --- */
+    .task-item {
+        padding: 14px;
+    }
+
+    .task-actions {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    /* --- CLASES --- */
+    .class-images {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 8px;
+    }
+
+    /* Miniaturas más pequeñas en tablets: mínimo 100px en vez de 150px.
+     Así caben más por fila sin verse demasiado grandes. */
+
+    .upload-section {
+        flex-wrap: wrap;
+    }
+
+    /* flex-wrap: wrap → Si los elementos de subida no caben
+     en una línea, bajan a la siguiente. */
+
+    /* --- MODAL --- */
+    .modal-content {
+        margin: 15px;
+        max-width: calc(100% - 30px);
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+}
+
+/* --- CELULARES (480px o menos) --- */
+@media (max-width: 480px) {
+    .tabs {
+        gap: 2px;
+    }
+
+    .tab-btn {
+        font-size: 0.82rem;
+        padding: 8px 12px;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .section-header .btn-add {
+        width: 100%;
+        text-align: center;
+    }
+
+    .filters {
+        gap: 5px;
+    }
+
+    .filter-btn {
+        font-size: 0.75rem;
+        padding: 5px 10px;
+    }
+
+    /* --- TAREAS --- */
+    .task-item {
+        flex-direction: column;
+        gap: 10px;
+        padding: 12px;
+    }
+
+    /* La tarea se reorganiza verticalmente:
+     checkbox arriba, contenido en medio, acciones abajo.
+     Más fácil de leer en pantallas angostas. */
+
+    .task-checkbox {
+        align-self: flex-start;
+    }
+
+    /* El checkbox se alinea a la izquierda. */
+
+    .task-content h4 {
+        font-size: 0.88rem;
+    }
+
+    .task-actions {
+        flex-direction: row;
+        align-self: flex-end;
+    }
+
+    /* Los botones de editar/eliminar vuelven a estar en fila
+     pero se alinean a la derecha de la tarjeta.
+     
+     align-self: flex-end → Se posiciona al final del eje
+     transversal. En una columna, "flex-end" es la derecha. */
+
+    .task-priority {
+        font-size: 0.68rem;
+    }
+
+    .task-dates {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .linked-class {
+        font-size: 0.72rem;
+    }
+
+    /* --- CLASES --- */
+    .class-item {
+        padding: 15px;
+    }
+
+    .class-header {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .class-header .task-actions {
+        align-self: flex-end;
+    }
+
+    .class-images {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 6px;
+    }
+
+    /* Miniaturas aún más pequeñas en celulares: mínimo 80px. */
+
+    .class-notes {
+        font-size: 0.82rem;
+    }
+
+    .upload-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    /* Los elementos de subida se apilan verticalmente y
+     "stretch" hace que cada uno ocupe el ancho completo. */
+
+    .file-input-label,
+    .upload-btn {
+        text-align: center;
+        padding: 10px;
+    }
+
+    /* --- VISOR DE IMAGEN --- */
+    .image-viewer img {
+        max-width: 95%;
+        max-height: 85%;
+    }
+
+    /* En celulares, la imagen ocupa más de la pantalla. */
+
+    /* --- MODAL --- */
+    .modal-content {
+        margin: 10px;
+        padding: 20px 15px;
+        max-width: calc(100% - 20px);
+    }
+
+    .modal-actions {
+        flex-direction: column;
+    }
+
+    .modal-form textarea {
+        font-size: 0.9rem;
+        min-height: 100px;
+    }
+}
+
+/* ============================================
+   MEJORAS TÁCTILES PARA MÓVIL
+   ============================================ */
+@media (hover: none) and (pointer: coarse) {
+    /* Esta media query detecta dispositivos TÁCTILES.
+     
+     hover: none → El dispositivo no tiene hover (no tiene mouse).
+     pointer: coarse → El puntero es "grueso" (dedo, no cursor).
+     
+     Estos estilos SOLO se aplican en celulares/tablets táctiles,
+     no en computadoras de escritorio. */
+
+    .task-checkbox {
+        width: 28px;
+        height: 28px;
+        min-width: 28px;
+    }
+
+    /* Checkbox más grande para tocar con el dedo.
+     El estándar mínimo de Apple para targets táctiles es 44px,
+     pero 28px funciona bien junto con el padding del contenedor. */
+
+    .btn-edit,
+    .btn-delete,
+    .task-actions button {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+
+    /* Botones más grandes para tocar fácilmente. */
+
+    .filter-btn {
+        padding: 8px 14px;
+    }
+
+    .delete-image-btn {
+        opacity: 1;
+        width: 28px;
+        height: 28px;
+    }
+
+    /* En dispositivos táctiles, el botón de eliminar imagen
+     siempre es visible (opacity: 1) porque no hay hover.
+     Si estuviera oculto, el usuario no sabría que existe. */
+
+    .subject-card {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Quita el resaltado azul que iOS/Android ponen al tocar elementos.
+     Nosotros ya tenemos nuestros propios estilos de interacción. */
+
+    .color-option {
+        width: 40px;
+        height: 40px;
+    }
+
+    /* Botones de color más grandes para tocar. */
+}
+
+/* ============================================
+   MENÚ MÓVIL — Página de Materia
+   ============================================ */
+.mobile-menu-btn {
+    display: none;
+    background: transparent;
+    border: 1px solid #334155;
+    color: #e2e8f0;
+    font-size: 1.3rem;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.mobile-menu {
+    display: none;
+    padding: 15px;
+    background-color: #1e293b;
+    border-bottom: 1px solid #334155;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.mobile-menu.active {
+    display: flex;
+}
+
+.mobile-user-name {
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 640px) {
+    .nav-user {
+        display: none;
+    }
+
+    .mobile-menu-btn {
+        display: block;
+    }
+}
