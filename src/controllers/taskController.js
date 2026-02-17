@@ -9,7 +9,7 @@ const supabase = require('../config/supabase');
 // =====================================================
 const createTask = async (req, res) => {
     try {
-        const { subject_id, title, description, start_date, due_date, priority } = req.body;
+        const { subject_id, title, description, start_date, due_date, priority, class_id } = req.body;
 
         // --- VALIDACIONES ---
         if (!subject_id || !title || !due_date) {
@@ -31,9 +31,6 @@ const createTask = async (req, res) => {
                 error: 'La prioridad debe ser high, medium o low'
             });
         }
-        // .includes(valor) → Verifica si un array contiene ese valor.
-        // ['high', 'medium', 'low'].includes('high') → true
-        // ['high', 'medium', 'low'].includes('urgente') → false
 
         // Validar que la fecha de entrega no sea anterior a la de elaboración
         if (start_date && due_date && new Date(start_date) > new Date(due_date)) {
@@ -41,9 +38,6 @@ const createTask = async (req, res) => {
                 error: 'La fecha de elaboración no puede ser posterior a la fecha de entrega'
             });
         }
-        // new Date('2025-03-15') → Crea un objeto Date de JavaScript
-        // a partir de un texto. Los objetos Date se pueden comparar
-        // con > y < para ver cuál es más reciente.
 
         // --- VERIFICAR QUE LA MATERIA EXISTE Y ES DEL USUARIO ---
         const { data: subject } = await supabase
@@ -58,8 +52,6 @@ const createTask = async (req, res) => {
                 error: 'Materia no encontrada'
             });
         }
-        // Siempre verificamos que la materia pertenezca al usuario.
-        // Un usuario no debería poder crear tareas en materias de otros.
 
         // --- INSERTAR LA TAREA ---
         const { data: newTask, error } = await supabase
@@ -71,14 +63,12 @@ const createTask = async (req, res) => {
                     description: description ? description.trim() : null,
                     start_date: start_date || null,
                     due_date: due_date,
-                    priority: priority || 'medium'
+                    priority: priority || 'medium',
+                    class_id: class_id || null
                 }
             ])
             .select()
             .single();
-        // description ? description.trim() : null
-        // → Si hay descripción, limpia espacios. Si no, guarda null.
-        //   null en base de datos significa "sin valor" (campo vacío).
 
         if (error) {
             console.error('Error al crear tarea:', error);
@@ -103,9 +93,6 @@ const createTask = async (req, res) => {
 const getTasksBySubject = async (req, res) => {
     try {
         const { subjectId } = req.params;
-        // La ruta será /api/tasks/subject/:subjectId
-        // Usamos "subjectId" en vez de "id" para que sea más claro
-        // que nos referimos al id de la materia, no de la tarea.
 
         // --- VERIFICAR QUE LA MATERIA ES DEL USUARIO ---
         const { data: subject } = await supabase
@@ -122,11 +109,12 @@ const getTasksBySubject = async (req, res) => {
         // --- OBTENER LAS TAREAS ---
         const { data: tasks, error } = await supabase
             .from('tasks')
-            .select('*')
+            .select(`
+        *,
+        classes ( id, title, class_date )
+      `)
             .eq('subject_id', subjectId)
             .order('due_date', { ascending: true });
-        // Ordenamos por fecha de entrega ascendente:
-        // las tareas con entrega más próxima aparecen primero.
 
         if (error) {
             console.error('Error al obtener tareas:', error);
@@ -165,40 +153,19 @@ const getUpcomingTasks = async (req, res) => {
 
         // Extraer solo los ids en un array
         const subjectIds = userSubjects.map(s => s.id);
-        // .map(s => s.id) → Transforma el array de objetos en un array de ids.
-        // [{ id: 'abc' }, { id: 'def' }] → ['abc', 'def']
 
         // Obtener tareas no completadas de esas materias
         const { data: tasks, error } = await supabase
             .from('tasks')
             .select(`
         *,
-        subjects ( name, color )
+        subjects ( name, color ),
+        classes ( id, title )
       `)
             .in('subject_id', subjectIds)
             .eq('completed', false)
             .order('due_date', { ascending: true })
             .limit(10);
-        // ¿Qué hay de nuevo aquí?
-        //
-        // select('*, subjects ( name, color )')
-        //   → Esto es un "JOIN" (unión). Además de traer todos los campos
-        //   de la tarea (*), también trae el nombre y color de la materia
-        //   relacionada. Supabase detecta la relación automáticamente
-        //   gracias a la llave foránea que definimos (REFERENCES subjects(id)).
-        //
-        //   El resultado incluye un campo "subjects" con los datos:
-        //   { id: '...', title: 'Tarea 1', ..., subjects: { name: 'Mate', color: '#3b82f6' } }
-        //
-        // .in('subject_id', subjectIds)
-        //   → "in" = "dentro de". Filtra tareas cuyo subject_id esté
-        //   dentro del array de ids. Es como un "WHERE subject_id IN (...)"
-        //   en SQL. Más eficiente que hacer una consulta por cada materia.
-        //
-        // .eq('completed', false) → Solo tareas NO completadas.
-        //
-        // .limit(10) → Máximo 10 resultados. No queremos cargar
-        //   cientos de tareas en el panel del dashboard.
 
         if (error) {
             console.error('Error al obtener tareas próximas:', error);
@@ -220,7 +187,7 @@ const getUpcomingTasks = async (req, res) => {
 const updateTask = async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, description, start_date, due_date, priority } = req.body;
+        const { title, description, start_date, due_date, priority, class_id } = req.body;
 
         if (!title || title.trim().length === 0 || !due_date) {
             return res.status(400).json({
@@ -247,20 +214,10 @@ const updateTask = async (req, res) => {
             .select('id, subject_id, subjects ( user_id )')
             .eq('id', id)
             .single();
-        // Aquí hacemos un JOIN para obtener el user_id de la materia.
-        // La tarea no tiene user_id directamente, pero su materia sí.
-        // Así verificamos que la tarea pertenece a una materia del usuario.
 
         if (!existingTask || existingTask.subjects.user_id !== req.user.id) {
             return res.status(404).json({ error: 'Tarea no encontrada' });
         }
-        // existingTask.subjects.user_id → Accedemos al user_id a través
-        // de la relación: tarea → materia → user_id.
-        //
-        // !== → "no es estrictamente igual". Compara valor Y tipo.
-        //   '5' !== 5  → true (string vs number)
-        //   '5' != 5   → false (solo compara valor)
-        // Siempre usa !== en vez de != para evitar errores sutiles.
 
         // --- ACTUALIZAR ---
         const { data: updated, error } = await supabase
@@ -270,7 +227,8 @@ const updateTask = async (req, res) => {
                 description: description ? description.trim() : null,
                 start_date: start_date || null,
                 due_date: due_date,
-                priority: priority || 'medium'
+                priority: priority || 'medium',
+                class_id: class_id || null
             })
             .eq('id', id)
             .select()
@@ -318,10 +276,6 @@ const toggleTaskCompleted = async (req, res) => {
             .eq('id', id)
             .select()
             .single();
-        // !task.completed → El operador ! invierte el booleano.
-        //   Si completed era true, ahora será false.
-        //   Si completed era false, ahora será true.
-        // Esto permite "togglear" (alternar) con una sola ruta.
 
         if (error) {
             console.error('Error al alternar tarea:', error);
@@ -332,7 +286,6 @@ const toggleTaskCompleted = async (req, res) => {
             message: updated.completed ? 'Tarea completada' : 'Tarea marcada como pendiente',
             task: updated
         });
-        // La ternaria elige el mensaje según el nuevo estado.
 
     } catch (error) {
         console.error('Error en toggleTaskCompleted:', error);

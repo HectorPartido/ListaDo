@@ -254,9 +254,6 @@ body {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
-/* translateY(-3px) → Mueve la tarjeta 3px hacia ARRIBA.
-   Junto con la sombra, da la ilusión de que la tarjeta
-   "se levanta" cuando pasas el mouse. */
 
 .subject-color {
     width: 40px;

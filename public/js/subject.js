@@ -13,37 +13,21 @@ const user = JSON.parse(userData);
 // --- OBTENER EL ID DE LA MATERIA DESDE LA URL ---
 const urlParams = new URLSearchParams(window.location.search);
 const subjectId = urlParams.get('id');
-// ¿Qué es URLSearchParams?
-// Cuando la URL es: subject.html?id=abc-123
-// La parte después del "?" se llama "query string" (cadena de consulta).
-//
-// new URLSearchParams(window.location.search) parsea esa cadena.
-// window.location.search → "?id=abc-123"
-// urlParams.get('id')    → "abc-123"
-//
-// Así pasamos datos entre páginas a través de la URL.
-// Cuando el usuario hace clic en una materia en el dashboard,
-// lo redirigimos a subject.html?id=XXXX
 
 if (!subjectId) {
     window.location.href = '/dashboard.html';
 }
-// Si no hay id en la URL, volvemos al dashboard.
 
 // --- MOSTRAR NOMBRE DEL USUARIO ---
 document.getElementById('user-name').textContent = user.name;
 
-// --- VARIABLE DE ESTADO ---
+// --- VARIABLES DE ESTADO ---
 let currentSubject = null;
 let allTasks = [];
 let currentFilter = 'pending';
 let currentEditingTaskId = null;
-// currentSubject → Los datos de la materia actual
-// allTasks → Todas las tareas (las filtramos en el frontend)
-// currentFilter → Qué filtro está activo (pending/completed/all)
-// currentEditingTaskId → Si estamos editando una tarea
 
-// --- FUNCIÓN fetchWithAuth (igual que en dashboard.js) ---
+// --- FUNCIÓN fetchWithAuth ---
 async function fetchWithAuth(url, options = {}) {
     const defaultHeaders = {
         'Content-Type': 'application/json',
@@ -62,10 +46,6 @@ async function fetchWithAuth(url, options = {}) {
     }
     return response;
 }
-// NOTA: Repetimos esta función aquí porque cada archivo JS se
-// carga independientemente. En un proyecto más avanzado, usaríamos
-// módulos ES6 o un bundler (como Vite) para compartir código.
-// Por ahora, la duplicación es aceptable para mantener la simplicidad.
 
 // =====================================================
 // CARGAR DATOS DE LA MATERIA
@@ -84,7 +64,6 @@ async function loadSubject() {
         currentSubject = data.subject;
         document.getElementById('subject-title').textContent = currentSubject.name;
         document.getElementById('subject-title').style.color = currentSubject.color;
-        // Ponemos el nombre de la materia en el navbar con su color.
 
     } catch (error) {
         console.error('Error:', error);
@@ -115,7 +94,6 @@ async function loadTasks() {
 function renderTasks() {
     const tasksList = document.getElementById('tasks-list');
 
-    // Filtrar según el filtro activo
     let filteredTasks;
     switch (currentFilter) {
         case 'pending':
@@ -127,13 +105,6 @@ function renderTasks() {
         default:
             filteredTasks = allTasks;
     }
-    // switch es como múltiples if/else pero más limpio para
-    // comparar un valor contra varias opciones.
-    //
-    // .filter() → Crea un nuevo array con solo los elementos que
-    // cumplan la condición.
-    // allTasks.filter(t => !t.completed)
-    //   → Solo tareas donde completed es false (pendientes).
 
     if (filteredTasks.length === 0) {
         const messages = {
@@ -142,43 +113,20 @@ function renderTasks() {
             all: 'No hay tareas. ¡Crea tu primera tarea!'
         };
         tasksList.innerHTML = `<p class="empty-message">${messages[currentFilter]}</p>`;
-        // messages[currentFilter] → Accede a la propiedad del objeto
-        // usando una variable como clave.
-        // Si currentFilter = 'pending', es como messages.pending
         return;
     }
 
     tasksList.innerHTML = filteredTasks.map(task => {
-        // --- Formatear fechas ---
         const dueDate = new Date(task.due_date + 'T00:00:00');
-        // ¿Por qué + 'T00:00:00'?
-        // Cuando creas new Date('2025-03-15'), JavaScript puede
-        // interpretarla en UTC, lo que podría mostrar el día anterior
-        // en zonas horarias negativas (como México).
-        // Al agregar 'T00:00:00', se interpreta como hora local.
-
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        // setHours(0,0,0,0) → Pone la hora a medianoche (00:00:00.000).
-        // Así comparamos solo fechas, sin que la hora afecte.
-
         const isOverdue = dueDate < today && !task.completed;
-        // La tarea está vencida si su fecha de entrega ya pasó
-        // Y no está completada.
 
         const dueDateFormatted = dueDate.toLocaleDateString('es-MX', {
             day: 'numeric',
             month: 'short',
             year: 'numeric'
         });
-        // .toLocaleDateString() → Formatea la fecha según un idioma.
-        // 'es-MX' → Español de México.
-        // El resultado sería algo como: "15 mar 2025"
-        //
-        // Opciones:
-        //   day: 'numeric'  → "15" (sin cero inicial)
-        //   month: 'short'  → "mar" (abreviado)
-        //   year: 'numeric' → "2025"
 
         let startDateFormatted = '';
         if (task.start_date) {
@@ -189,7 +137,21 @@ function renderTasks() {
             });
         }
 
-        // --- Generar HTML ---
+        // --- Clase vinculada ---
+        let linkedClassHTML = '';
+        if (task.classes) {
+            const classDate = new Date(task.classes.class_date + 'T00:00:00');
+            const classDateStr = classDate.toLocaleDateString('es-MX', {
+                day: 'numeric',
+                month: 'short'
+            });
+            linkedClassHTML = `
+        <div class="linked-class" onclick="goToClass('${task.classes.id}')">
+          📖 Clase vinculada: ${task.classes.title} (${classDateStr})
+        </div>
+      `;
+        }
+
         return `
       <div class="task-item ${task.completed ? 'completed' : ''}">
         <div 
@@ -200,6 +162,7 @@ function renderTasks() {
           <span class="task-priority ${task.priority}">${task.priority}</span>
           <h4>${task.title}</h4>
           ${task.description ? `<p class="task-description">${task.description}</p>` : ''}
+          ${linkedClassHTML}
           <div class="task-dates">
             ${startDateFormatted ? `<span>📅 Inicio: ${startDateFormatted}</span>` : ''}
             <span class="${isOverdue ? 'overdue' : ''}">
@@ -213,11 +176,6 @@ function renderTasks() {
         </div>
       </div>
     `;
-        // ${condición ? 'siTrue' : 'siFalse'} → Ternarias dentro
-        // del template literal para renderizado condicional.
-        //
-        // ${task.description ? `<p>...</p>` : ''} → Si hay descripción,
-        // muestra el párrafo. Si no, no muestra nada (string vacío).
     }).join('');
 }
 
@@ -254,6 +212,12 @@ function createTaskModal() {
               <option value="high">🔴 Alta</option>
             </select>
           </div>
+          <div>
+            <label for="task-class">Vincular a una clase (opcional)</label>
+            <select id="task-class">
+              <option value="">Sin clase vinculada</option>
+            </select>
+          </div>
           <div class="modal-actions">
             <button type="button" id="cancel-task" class="btn-cancel">Cancelar</button>
             <button type="submit" class="btn-submit">Guardar</button>
@@ -262,22 +226,13 @@ function createTaskModal() {
       </div>
     </div>
   `;
-    // type="date" → El navegador muestra un selector de fecha nativo.
-    //   Es diferente en cada navegador pero siempre funcional.
-    //
-    // <select> → Lista desplegable con opciones.
-    //   <option value="medium" selected> → "selected" hace que esta
-    //   opción esté seleccionada por defecto al abrir el formulario.
 
     document.body.insertAdjacentHTML('beforeend', modalHTML);
 
-    // --- EVENTOS ---
     document.getElementById('cancel-task').addEventListener('click', closeTaskModal);
-
     document.getElementById('task-modal').addEventListener('click', (event) => {
         if (event.target.id === 'task-modal') closeTaskModal();
     });
-
     document.getElementById('task-form').addEventListener('submit', handleTaskSubmit);
 }
 
@@ -288,6 +243,23 @@ function openTaskModal(task = null) {
     const modal = document.getElementById('task-modal');
     const title = document.getElementById('task-modal-title');
 
+    // --- LLENAR EL SELECTOR DE CLASES ---
+    const classSelect = document.getElementById('task-class');
+    classSelect.innerHTML = '<option value="">Sin clase vinculada</option>';
+
+    allClasses.forEach(cls => {
+        const classDate = new Date(cls.class_date + 'T00:00:00');
+        const dateStr = classDate.toLocaleDateString('es-MX', {
+            day: 'numeric',
+            month: 'short'
+        });
+
+        const option = document.createElement('option');
+        option.value = cls.id;
+        option.textContent = `${cls.title} (${dateStr})`;
+        classSelect.appendChild(option);
+    });
+
     if (task) {
         title.textContent = 'Editar Tarea';
         document.getElementById('task-title').value = task.title;
@@ -295,12 +267,11 @@ function openTaskModal(task = null) {
         document.getElementById('task-start-date').value = task.start_date || '';
         document.getElementById('task-due-date').value = task.due_date;
         document.getElementById('task-priority').value = task.priority;
+        classSelect.value = task.class_id || '';
         currentEditingTaskId = task.id;
     } else {
         title.textContent = 'Nueva Tarea';
         document.getElementById('task-form').reset();
-        // .reset() → Método de los formularios que limpia todos los campos
-        // y los devuelve a su valor por defecto (incluyendo el select).
         currentEditingTaskId = null;
     }
 
@@ -319,17 +290,17 @@ function closeTaskModal() {
 async function handleTaskSubmit(event) {
     event.preventDefault();
 
+    const classValue = document.getElementById('task-class').value;
+
     const taskData = {
         subject_id: subjectId,
         title: document.getElementById('task-title').value.trim(),
         description: document.getElementById('task-description').value.trim(),
         start_date: document.getElementById('task-start-date').value || null,
         due_date: document.getElementById('task-due-date').value,
-        priority: document.getElementById('task-priority').value
+        priority: document.getElementById('task-priority').value,
+        class_id: classValue || null
     };
-    // Armamos un objeto con todos los datos del formulario.
-    // .value en un <select> devuelve el value de la opción seleccionada.
-    // .value en un input type="date" devuelve la fecha en formato "YYYY-MM-DD".
 
     if (!taskData.title || !taskData.due_date) {
         alert('El título y la fecha de entrega son obligatorios');
@@ -381,11 +352,6 @@ async function toggleTask(id) {
 
 async function editTask(id) {
     const task = allTasks.find(t => t.id === id);
-    // .find() → Busca en el array el PRIMER elemento que cumpla
-    // la condición y lo retorna. Si no encuentra, retorna undefined.
-    // Es más eficiente que hacer otra petición al servidor
-    // porque ya tenemos las tareas en memoria (allTasks).
-
     if (task) openTaskModal(task);
 }
 
@@ -407,16 +373,12 @@ async function deleteTask(id) {
 // =====================================================
 document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-        // Desactivar todas las pestañas
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
 
-        // Activar la pestaña clickeada
         btn.classList.add('active');
         const tabId = btn.dataset.tab + '-tab';
         document.getElementById(tabId).classList.add('active');
-        // Si data-tab="tasks", tabId = "tasks-tab"
-        // El elemento con id="tasks-tab" se activa.
     });
 });
 
@@ -429,9 +391,6 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.classList.add('active');
         currentFilter = btn.dataset.filter;
         renderTasks();
-        // Al cambiar el filtro, NO hacemos otra petición al servidor.
-        // Solo re-renderizamos con los datos que ya tenemos (allTasks).
-        // Esto es más rápido y eficiente.
     });
 });
 
@@ -443,6 +402,36 @@ document.getElementById('logout-btn').addEventListener('click', () => {
     localStorage.removeItem('user');
     window.location.href = '/';
 });
+
+// =====================================================
+// NAVEGAR A UNA CLASE VINCULADA
+// =====================================================
+function goToClass(classId) {
+    // Activar la pestaña de clases
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+    const classesTab = document.querySelector('[data-tab="classes"]');
+    classesTab.classList.add('active');
+    document.getElementById('classes-tab').classList.add('active');
+
+    // Esperar un momento para que el DOM se actualice y hacer scroll
+    setTimeout(() => {
+        const classElement = document.querySelector(`.class-item[data-id="${classId}"]`);
+
+        if (classElement) {
+            classElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Efecto visual de resaltado temporal
+            classElement.style.borderColor = '#3b82f6';
+            classElement.style.boxShadow = '0 0 15px rgba(59, 130, 246, 0.3)';
+            setTimeout(() => {
+                classElement.style.borderColor = '';
+                classElement.style.boxShadow = '';
+            }, 2000);
+        }
+    }, 100);
+}
 
 // =====================================================
 // GESTIÓN DE CLASES
@@ -479,9 +468,6 @@ function createClassModal() {
       </div>
     </div>
   `;
-    // <textarea> → Un campo de texto multilínea. A diferencia de <input>,
-    //   permite escribir varios párrafos.
-    //   rows="5" → Altura inicial de 5 líneas.
 
     document.body.insertAdjacentHTML('beforeend', modalHTML);
 
@@ -506,14 +492,11 @@ function createImageViewer() {
     document.getElementById('image-viewer').addEventListener('click', () => {
         document.getElementById('image-viewer').classList.remove('active');
     });
-    // Al hacer clic en cualquier parte del visor, se cierra.
 }
 
 function openImageViewer(imageUrl) {
     const viewer = document.getElementById('image-viewer');
     document.getElementById('viewer-image').src = imageUrl;
-    // .src → El atributo "source" (fuente) de la imagen.
-    // Al cambiar el src, el navegador carga la nueva imagen.
     viewer.classList.add('active');
 }
 
@@ -631,9 +614,6 @@ function renderClasses() {
             month: 'long',
             year: 'numeric'
         });
-        // weekday: 'long' → "lunes", "martes", etc.
-        // month: 'long'   → "enero", "febrero", etc.
-        // Resultado: "lunes, 15 de marzo de 2025"
 
         // Generar galería de imágenes
         let imagesHTML = '';
@@ -657,10 +637,6 @@ function renderClasses() {
           `).join('')}
         </div>
       `;
-            // loading="lazy" → El navegador NO carga la imagen inmediatamente.
-            //   Solo la carga cuando el usuario hace scroll y la imagen está
-            //   cerca de ser visible. Esto mejora el rendimiento si hay muchas
-            //   imágenes, porque no las descarga todas al mismo tiempo.
         }
 
         return `
@@ -693,16 +669,6 @@ function renderClasses() {
         </div>
       </div>
     `;
-        // <input type="file"> → Campo para seleccionar archivos del dispositivo.
-        //   multiple → Permite seleccionar varios archivos a la vez.
-        //   accept="image/*" → Solo muestra archivos de imagen en el selector.
-        //     El asterisco * significa "cualquier subtipo de imagen".
-        //
-        // El <label for="file-input-..."> activa el input al hacer clic.
-        // El input está oculto (file-input-hidden) y el label se ve bonito.
-        //
-        // Usamos ids dinámicos (file-input-${cls.id}) para que cada clase
-        // tenga su propio input y botón de subida.
     }).join('');
 
     // --- AGREGAR EVENTOS DE CAMBIO A CADA INPUT DE ARCHIVO ---
@@ -714,20 +680,15 @@ function renderClasses() {
         if (fileInput) {
             fileInput.addEventListener('change', () => {
                 const count = fileInput.files.length;
-                // fileInput.files → Un FileList con los archivos seleccionados.
-                // .length → Cuántos archivos se seleccionaron.
 
                 if (count > 0) {
                     fileCount.textContent = `${count} archivo(s) seleccionado(s)`;
                     uploadBtn.disabled = false;
-                    // .disabled = false → Habilita el botón.
                 } else {
                     fileCount.textContent = '';
                     uploadBtn.disabled = true;
                 }
             });
-            // El evento 'change' se dispara cuando el usuario selecciona
-            // archivos en el diálogo del sistema operativo.
         }
     });
 }
@@ -744,28 +705,12 @@ async function uploadImages(classId) {
         return;
     }
 
-    // --- CREAR FormData ---
     const formData = new FormData();
-    // ¿Qué es FormData?
-    // Es un objeto especial del navegador para construir datos
-    // en formato multipart/form-data. Es el ÚNICO formato que
-    // permite enviar archivos binarios (imágenes, PDFs, etc.)
-    // a través de HTTP.
-    //
-    // A diferencia de JSON (que solo maneja texto), FormData
-    // puede contener archivos, texto y cualquier mezcla de ambos.
 
     for (const file of fileInput.files) {
         formData.append('images', file);
-        // .append(nombre, valor) → Agrega un campo al FormData.
-        // 'images' → El nombre del campo. DEBE coincidir con lo que
-        //   Multer espera en el backend: upload.array('images', 10)
-        //
-        // Si agregas varios archivos con el mismo nombre 'images',
-        // el servidor los recibe como un array (req.files).
     }
 
-    // Deshabilitar botón durante la subida
     uploadBtn.disabled = true;
     uploadBtn.textContent = 'Subiendo...';
 
@@ -777,14 +722,6 @@ async function uploadImages(classId) {
             },
             body: formData
         });
-        // ⚠️ IMPORTANTE: NO ponemos 'Content-Type': 'application/json'
-        // Cuando envías FormData, el navegador automáticamente establece
-        // el Content-Type correcto: 'multipart/form-data' con un
-        // "boundary" (separador) que el servidor necesita para parsear
-        // los archivos.
-        //
-        // Si pones Content-Type manualmente, sobrescribes el boundary
-        // y el servidor no podrá leer los archivos. Es un error muy común.
 
         const data = await response.json();
 
@@ -798,8 +735,6 @@ async function uploadImages(classId) {
         alert('Error al subir las imágenes');
     } finally {
         uploadBtn.textContent = 'Subir';
-        // "finally" → Se ejecuta SIEMPRE, haya error o no.
-        // Restauramos el botón en cualquier caso.
     }
 }
 
