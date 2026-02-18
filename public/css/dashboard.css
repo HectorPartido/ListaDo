@@ -161,6 +161,7 @@ body {
     border-radius: 8px;
     border-left: 4px solid #3b82f6;
     transition: transform 0.2s ease;
+    margin-bottom: 10px;
 }
 
 /* border-left: 4px solid → Una línea de color en el borde izquierdo.
