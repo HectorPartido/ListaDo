@@ -51,7 +51,7 @@ app.get('/', (req, res) => {
 });
 
 // --- MANEJAR RUTAS NO ENCONTRADAS ---
-app.get('*', (req, res) => {
+app.get('/{*splat}', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 // ¿Qué hace esto?
