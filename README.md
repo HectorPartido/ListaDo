@@ -14,7 +14,7 @@ registrar clases con apuntes/imágenes, y priorizar entregas.
 
 1. Clona el repositorio:
 ```bash
-   git clone https://github.com/TU_USUARIO/listtodo.git
+   git clone https://github.com/HectorPartido/ListaDo.git
    cd listtodo
 ```
 
