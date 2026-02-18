@@ -220,6 +220,20 @@
     color: #475569;
 }
 
+/* ==================== FOOTER ==================== */
+.app-footer {
+    text-align: center;
+    padding: 20px;
+    color: #475569;
+    font-size: 0.78rem;
+    margin-top: 40px;
+    border-top: 1px solid #1e293b;
+}
+
+.app-footer strong {
+    color: #64748b;
+}
+
 /* ==================== ANIMACIONES DE ENTRADA ==================== */
 @keyframes fadeInUp {
     from {
