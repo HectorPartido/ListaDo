@@ -1,0 +1,280 @@
+/* ============================================
+    public/css/utils.css — Estilos de utilidades UX
+   ============================================ */
+
+/* ==================== TOASTS ==================== */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.toast {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    background-color: #1e293b;
+    border: 1px solid #334155;
+    color: #e2e8f0;
+    font-size: 0.88rem;
+    min-width: 280px;
+    max-width: 420px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    pointer-events: auto;
+    transform: translateX(120%);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.toast-visible {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.toast-hiding {
+    transform: translateX(120%);
+    opacity: 0;
+}
+
+.toast-success {
+    border-left: 4px solid #22c55e;
+}
+
+.toast-error {
+    border-left: 4px solid #ef4444;
+}
+
+.toast-warning {
+    border-left: 4px solid #f59e0b;
+}
+
+.toast-info {
+    border-left: 4px solid #3b82f6;
+}
+
+.toast-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.toast-message {
+    flex: 1;
+}
+
+.toast-close {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: color 0.2s ease;
+    flex-shrink: 0;
+}
+
+.toast-close:hover {
+    color: #e2e8f0;
+}
+
+/* ==================== DIÁLOGO DE CONFIRMACIÓN ==================== */
+.confirm-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 500;
+    transition: background-color 0.2s ease;
+}
+
+.confirm-visible {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.confirm-visible .confirm-dialog {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.confirm-dialog {
+    background-color: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 25px;
+    max-width: 380px;
+    width: calc(100% - 40px);
+    transform: scale(0.9);
+    opacity: 0;
+    transition: all 0.2s ease;
+}
+
+.confirm-title {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: #e2e8f0;
+}
+
+.confirm-message {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.confirm-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.confirm-btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.confirm-cancel {
+    background-color: transparent;
+    border: 1px solid #334155;
+    color: #94a3b8;
+}
+
+.confirm-cancel:hover {
+    border-color: #94a3b8;
+    color: #e2e8f0;
+}
+
+.confirm-accept {
+    background-color: #ef4444;
+    border: none;
+    color: white;
+}
+
+.confirm-accept:hover {
+    background-color: #dc2626;
+}
+
+/* ==================== LOADING SPINNER ==================== */
+.loading-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading {
+    opacity: 0.7;
+    cursor: wait;
+}
+
+/* ==================== BARRA DE BÚSQUEDA ==================== */
+.search-container {
+    margin-bottom: 20px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 16px 12px 40px;
+    border: 2px solid #334155;
+    border-radius: 10px;
+    background-color: #0f172a;
+    color: #e2e8f0;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.3s ease;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: 12px center;
+    background-size: 20px;
+}
+
+.search-input:focus {
+    border-color: #3b82f6;
+}
+
+.search-input::placeholder {
+    color: #475569;
+}
+
+/* ==================== ANIMACIONES DE ENTRADA ==================== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-in {
+    animation: fadeInUp 0.3s ease forwards;
+}
+
+.animate-in:nth-child(1) {
+    animation-delay: 0ms;
+}
+
+.animate-in:nth-child(2) {
+    animation-delay: 50ms;
+}
+
+.animate-in:nth-child(3) {
+    animation-delay: 100ms;
+}
+
+.animate-in:nth-child(4) {
+    animation-delay: 150ms;
+}
+
+.animate-in:nth-child(5) {
+    animation-delay: 200ms;
+}
+
+.animate-in:nth-child(6) {
+    animation-delay: 250ms;
+}
+
+/* ==================== RESPONSIVE TOASTS ==================== */
+@media (max-width: 480px) {
+    .toast-container {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+    }
+
+    .toast {
+        min-width: auto;
+        max-width: none;
+    }
+
+    .confirm-dialog {
+        width: calc(100% - 20px);
+    }
+}

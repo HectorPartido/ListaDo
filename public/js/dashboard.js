@@ -80,9 +80,6 @@ if (mobileMenuBtn && mobileMenu) {
     mobileMenuBtn.addEventListener('click', () => {
         mobileMenu.classList.toggle('active');
     });
-    // .toggle('active') → Si la clase está presente, la quita.
-    //   Si no está presente, la agrega. Es un interruptor (on/off).
-    //   Perfecto para abrir/cerrar menús.
 
     mobileLogoutBtn.addEventListener('click', () => {
         localStorage.removeItem('token');
@@ -310,7 +307,7 @@ async function handleSubjectSubmit(event) {
     const color = selectedColor ? selectedColor.dataset.color : '#3b82f6';
 
     if (!name) {
-        alert('El nombre de la materia es obligatorio');
+        showToast('El nombre de la materia es obligatorio', 'warning');
         return;
     }
 
@@ -332,15 +329,16 @@ async function handleSubjectSubmit(event) {
         const data = await response.json();
 
         if (response.ok) {
+            showToast(currentEditingSubjectId ? 'Materia actualizada' : 'Materia creada', 'success');
             closeSubjectModal();
             loadSubjects();
         } else {
-            alert(data.error);
+            showToast(data.error, 'error');
         }
 
     } catch (error) {
         console.error('Error:', error);
-        alert('Error al guardar la materia');
+        showToast('Error al guardar la materia', 'error');
     }
 }
 
@@ -373,11 +371,11 @@ function renderSubjects(subjects) {
     }
 
     subjectsList.innerHTML = subjects.map(subject => `
-    <div class="subject-card" data-id="${subject.id}">
+    <div class="subject-card animate-in" data-id="${subject.id}" data-name="${subject.name.toLowerCase()}">
       <div class="subject-color" style="background-color: ${subject.color}"></div>
       <h4>${subject.name}</h4>
       <p class="subject-stats">
-        📝 Tareas &nbsp;|&nbsp; 📖 Clases
+        📝 Tareas: ${subject.tasks ? subject.tasks.length : 0} &nbsp;|&nbsp; 📖 Clases: ${subject.classes ? subject.classes.length : 0}
       </p>
       <div class="subject-actions">
         <button class="btn-edit" onclick="event.stopPropagation(); editSubject('${subject.id}')">✏️ Editar</button>
@@ -406,7 +404,7 @@ async function editSubject(id) {
         if (response.ok) {
             openSubjectModal(data.subject);
         } else {
-            alert(data.error);
+            showToast(data.error, 'error');
         }
     } catch (error) {
         console.error('Error:', error);
@@ -417,7 +415,10 @@ async function editSubject(id) {
 // ELIMINAR UNA MATERIA
 // =====================================================
 async function deleteSubject(id) {
-    const confirmed = confirm('¿Estás seguro de que quieres eliminar esta materia? Se eliminarán también sus tareas y clases.');
+    const confirmed = await showConfirm(
+        '¿Estás seguro de que quieres eliminar esta materia? Se eliminarán también sus tareas y clases.',
+        'Eliminar materia'
+    );
 
     if (!confirmed) return;
 
@@ -429,14 +430,51 @@ async function deleteSubject(id) {
         const data = await response.json();
 
         if (response.ok) {
+            showToast('Materia eliminada', 'success');
             loadSubjects();
         } else {
-            alert(data.error);
+            showToast(data.error, 'error');
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('Error al eliminar la materia');
+        showToast('Error al eliminar la materia', 'error');
     }
+}
+
+// =====================================================
+// BÚSQUEDA DE MATERIAS
+// =====================================================
+const searchInput = document.getElementById('search-subjects');
+if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase().trim();
+
+        const cards = document.querySelectorAll('.subject-card');
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+            const name = card.dataset.name;
+
+            if (name.includes(searchTerm)) {
+                card.style.display = '';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        // Mostrar mensaje si no hay resultados
+        if (visibleCount === 0 && searchTerm !== '') {
+            if (!document.getElementById('no-results-msg')) {
+                subjectsList.insertAdjacentHTML('beforeend',
+                    '<p id="no-results-msg" class="empty-message">No se encontraron materias</p>'
+                );
+            }
+        } else {
+            const noResults = document.getElementById('no-results-msg');
+            if (noResults) noResults.remove();
+        }
+    });
 }
 
 // =====================================================

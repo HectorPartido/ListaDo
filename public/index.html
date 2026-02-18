@@ -1,103 +1,60 @@
 <!DOCTYPE html>
 <html lang="es">
-<!-- lang="es" → Le dice al navegador que la página está en español.
-Ayuda a lectores de pantalla y traductores automáticos. -->
 
 <head>
     <meta charset="UTF-8">
-    <!-- charset="UTF-8" → Permite mostrar caracteres especiales
-    como ñ, á, é, í, etc. Sin esto, podrían verse como símbolos raros. -->
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- viewport → Le dice al navegador cómo manejar el tamaño en
-    dispositivos móviles. Sin esto, la página se vería diminuta
-    en el celular. "width=device-width" = usa el ancho del dispositivo. -->
-
-    <title>ListaDo - Gestiona tus tareas</title>
-    <!-- El texto que aparece en la pestaña del navegador -->
-
+    <title>ListaDo - Iniciar Sesión</title>
     <link rel="stylesheet" href="/css/style.css">
-    <!-- Enlaza nuestra hoja de estilos CSS. La ruta "/css/style.css"
-    funciona porque configuramos express.static para servir
-    archivos desde la carpeta 'public'. -->
+    <link rel="stylesheet" href="/css/utils.css">
 </head>
 
 <body>
     <div class="container">
-        <!-- Un contenedor principal para centrar el contenido -->
+        <h1>ListaDo 📝</h1>
+        <p class="subtitle">Tu organizador universitario</p>
 
-        <h1>ListToDo 📝</h1>
-        <p class="subtitle">Gestiona tus tareas universitarias</p>
-
-        <!-- ==================== SELECTOR DE FORMULARIO ==================== -->
+        <!-- BOTONES DE ALTERNANCIA -->
         <div class="form-toggle">
             <button id="show-login" class="toggle-btn active">Iniciar Sesión</button>
             <button id="show-register" class="toggle-btn">Registrarse</button>
         </div>
-        <!-- Dos botones para alternar entre login y registro.
-        "id" permite identificar un elemento desde JavaScript.
-        "class" permite aplicarle estilos CSS. -->
 
-        <!-- ==================== FORMULARIO DE LOGIN ==================== -->
+        <!-- FORMULARIO DE LOGIN -->
         <form id="login-form" class="auth-form">
-        <!-- <form> agrupa campos de entrada relacionados.
-        id="login-form" → Para manipularlo desde JavaScript.
-        class="auth-form" → Para darle estilo con CSS. -->
-
             <div class="form-group">
-                <label for="login-email">Email</label>
-                <!-- <label> es la etiqueta descriptiva del campo.
-            "for" lo vincula con el input cuyo id coincida.
-            Esto hace que al hacer clic en "Email", se active el campo. -->
-
-                <input type="email" id="login-email" placeholder="tu@email.com" required>
-                <!-- type="email" → El navegador valida que tenga formato de email.
-            placeholder → Texto gris de ejemplo dentro del campo.
-            required → No permite enviar el formulario si está vacío. -->
+                <label for="login-email">Correo electrónico</label>
+                <input type="email" id="login-email" placeholder="tu@correo.com" required>
             </div>
-
             <div class="form-group">
                 <label for="login-password">Contraseña</label>
-                <input type="password" id="login-password" placeholder="Tu contraseña" required>
-                <!-- type="password" → Oculta el texto con puntos (•••••) -->
+                <input type="password" id="login-password" placeholder="Tu contraseña" required minlength="6">
             </div>
-
-            <button type="submit" class="btn-primary">Iniciar Sesión</button>
-            <!-- type="submit" → Al hacer clic, dispara el evento "submit"
-            del formulario. Nosotros lo interceptaremos con JavaScript. -->
+            <button type="submit" class="btn-submit">Iniciar Sesión</button>
         </form>
 
-        <!-- ==================== FORMULARIO DE REGISTRO ==================== -->
-        <form id="register-form" class="auth-form hidden">
-            <!-- class="hidden" → Este formulario empieza oculto.
-            Lo mostraremos cuando el usuario haga clic en "Registrarse". -->
-
+        <!-- FORMULARIO DE REGISTRO -->
+        <form id="register-form" class="auth-form" style="display: none;">
             <div class="form-group">
-                <label for="register-name">Nombre</label>
+                <label for="register-name">Nombre completo</label>
                 <input type="text" id="register-name" placeholder="Tu nombre" required>
             </div>
-
             <div class="form-group">
-                <label for="register-email">Email</label>
-                <input type="email" id="register-email" placeholder="tu@email.com" required>
+                <label for="register-email">Correo electrónico</label>
+                <input type="email" id="register-email" placeholder="tu@correo.com" required>
             </div>
-
             <div class="form-group">
                 <label for="register-password">Contraseña</label>
                 <input type="password" id="register-password" placeholder="Mínimo 6 caracteres" required minlength="6">
             </div>
-
-            <button type="submit" class="btn-primary">Registrarse</button>
+            <button type="submit" class="btn-submit">Registrarse</button>
         </form>
 
-        <!-- ==================== MENSAJES ==================== -->
         <div id="message" class="message"></div>
-        <!-- Aquí mostraremos mensajes de éxito o error con JavaScript -->
-
     </div>
 
+    <script src="/js/utils.js"></script>
     <script src="/js/auth.js"></script>
-
 </body>
 
 </html>

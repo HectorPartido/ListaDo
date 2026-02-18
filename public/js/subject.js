@@ -8,7 +8,7 @@ const userData = localStorage.getItem('user');
 if (!token || !userData) {
     window.location.href = '/';
 }
-const user = JSON.parse(userData);
+const user = JSON.parse(userData); 
 
 // --- OBTENER EL ID DE LA MATERIA DESDE LA URL ---
 const urlParams = new URLSearchParams(window.location.search);
@@ -56,7 +56,7 @@ async function loadSubject() {
         const data = await response.json();
 
         if (!response.ok) {
-            alert('Materia no encontrada');
+            showToast('Materia no encontrada', 'error');
             window.location.href = '/dashboard.html';
             return;
         }
@@ -303,7 +303,7 @@ async function handleTaskSubmit(event) {
     };
 
     if (!taskData.title || !taskData.due_date) {
-        alert('El título y la fecha de entrega son obligatorios');
+        showToast('El título y la fecha de entrega son obligatorios', 'warning');
         return;
     }
 
@@ -325,14 +325,15 @@ async function handleTaskSubmit(event) {
         const data = await response.json();
 
         if (response.ok) {
+            showToast(currentEditingTaskId ? 'Tarea actualizada' : 'Tarea creada', 'success');
             closeTaskModal();
             loadTasks();
         } else {
-            alert(data.error);
+            showToast(data.error, 'error');
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('Error al guardar la tarea');
+        showToast('Error al guardar la tarea', 'error');
     }
 }
 
@@ -344,7 +345,11 @@ async function toggleTask(id) {
         const response = await fetchWithAuth(`/api/tasks/${id}/toggle`, {
             method: 'PUT'
         });
-        if (response.ok) loadTasks();
+        if (response.ok) {
+            const data = await response.json();
+            showToast(data.message, 'success');
+            loadTasks();
+        }
     } catch (error) {
         console.error('Error:', error);
     }
@@ -356,13 +361,17 @@ async function editTask(id) {
 }
 
 async function deleteTask(id) {
-    if (!confirm('¿Eliminar esta tarea?')) return;
+    const confirmed = await showConfirm('¿Eliminar esta tarea?', 'Eliminar tarea');
+    if (!confirmed) return;
 
     try {
         const response = await fetchWithAuth(`/api/tasks/${id}`, {
             method: 'DELETE'
         });
-        if (response.ok) loadTasks();
+        if (response.ok) {
+            showToast('Tarea eliminada', 'success');
+            loadTasks();
+        }
     } catch (error) {
         console.error('Error:', error);
     }
@@ -435,14 +444,12 @@ function goToClass(classId) {
     classesTab.classList.add('active');
     document.getElementById('classes-tab').classList.add('active');
 
-    // Esperar un momento para que el DOM se actualice y hacer scroll
     setTimeout(() => {
         const classElement = document.querySelector(`.class-item[data-id="${classId}"]`);
 
         if (classElement) {
             classElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-            // Efecto visual de resaltado temporal
             classElement.style.borderColor = '#3b82f6';
             classElement.style.boxShadow = '0 0 15px rgba(59, 130, 246, 0.3)';
             setTimeout(() => {
@@ -564,7 +571,7 @@ async function handleClassSubmit(event) {
     };
 
     if (!classDataToSend.title || !classDataToSend.class_date) {
-        alert('El título y la fecha son obligatorios');
+        showToast('El título y la fecha son obligatorios', 'warning');
         return;
     }
 
@@ -586,14 +593,15 @@ async function handleClassSubmit(event) {
         const data = await response.json();
 
         if (response.ok) {
+            showToast(currentEditingClassId ? 'Clase actualizada' : 'Clase creada', 'success');
             closeClassModal();
             loadClasses();
         } else {
-            alert(data.error);
+            showToast(data.error, 'error');
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('Error al guardar la clase');
+        showToast('Error al guardar la clase', 'error');
     }
 }
 
@@ -626,7 +634,6 @@ function renderClasses() {
     }
 
     classesList.innerHTML = allClasses.map(cls => {
-        // Formatear fecha
         const classDate = new Date(cls.class_date + 'T00:00:00');
         const dateFormatted = classDate.toLocaleDateString('es-MX', {
             weekday: 'long',
@@ -635,7 +642,6 @@ function renderClasses() {
             year: 'numeric'
         });
 
-        // Generar galería de imágenes
         let imagesHTML = '';
         if (cls.class_images && cls.class_images.length > 0) {
             imagesHTML = `
@@ -691,7 +697,6 @@ function renderClasses() {
     `;
     }).join('');
 
-    // --- AGREGAR EVENTOS DE CAMBIO A CADA INPUT DE ARCHIVO ---
     allClasses.forEach(cls => {
         const fileInput = document.getElementById(`file-input-${cls.id}`);
         const uploadBtn = document.getElementById(`upload-btn-${cls.id}`);
@@ -721,7 +726,7 @@ async function uploadImages(classId) {
     const uploadBtn = document.getElementById(`upload-btn-${classId}`);
 
     if (!fileInput.files || fileInput.files.length === 0) {
-        alert('Selecciona al menos una imagen');
+        showToast('Selecciona al menos una imagen', 'warning');
         return;
     }
 
@@ -746,13 +751,14 @@ async function uploadImages(classId) {
         const data = await response.json();
 
         if (response.ok) {
+            showToast('Imágenes subidas exitosamente', 'success');
             loadClasses();
         } else {
-            alert(data.error);
+            showToast(data.error, 'error');
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('Error al subir las imágenes');
+        showToast('Error al subir las imágenes', 'error');
     } finally {
         uploadBtn.textContent = 'Subir';
     }
@@ -762,7 +768,8 @@ async function uploadImages(classId) {
 // ELIMINAR IMAGEN
 // =====================================================
 async function deleteClassImage(imageId) {
-    if (!confirm('¿Eliminar esta imagen?')) return;
+    const confirmed = await showConfirm('¿Eliminar esta imagen?', 'Eliminar imagen');
+    if (!confirmed) return;
 
     try {
         const response = await fetchWithAuth(`/api/classes/images/${imageId}`, {
@@ -770,10 +777,11 @@ async function deleteClassImage(imageId) {
         });
 
         if (response.ok) {
+            showToast('Imagen eliminada', 'success');
             loadClasses();
         } else {
             const data = await response.json();
-            alert(data.error);
+            showToast(data.error, 'error');
         }
     } catch (error) {
         console.error('Error:', error);
@@ -792,7 +800,11 @@ async function editClass(id) {
 // ELIMINAR CLASE
 // =====================================================
 async function deleteClass(id) {
-    if (!confirm('¿Eliminar esta clase y todas sus imágenes?')) return;
+    const confirmed = await showConfirm(
+        '¿Eliminar esta clase y todas sus imágenes?',
+        'Eliminar clase'
+    );
+    if (!confirmed) return;
 
     try {
         const response = await fetchWithAuth(`/api/classes/${id}`, {
@@ -800,10 +812,11 @@ async function deleteClass(id) {
         });
 
         if (response.ok) {
+            showToast('Clase eliminada', 'success');
             loadClasses();
         } else {
             const data = await response.json();
-            alert(data.error);
+            showToast(data.error, 'error');
         }
     } catch (error) {
         console.error('Error:', error);

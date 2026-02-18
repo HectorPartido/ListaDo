@@ -1,8 +1,3 @@
-<!--
-public/dashboard.html — Panel principal del usuario
-Esta página solo es accesible después de iniciar sesión.
-Aquí el usuario verá sus materias, tareas y clases.
--->
 <!DOCTYPE html>
 <html lang="es">
 
@@ -11,6 +6,7 @@ Aquí el usuario verá sus materias, tareas y clases.
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ListaDo - Dashboard</title>
     <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/utils.css">
 </head>
 
 <body>
@@ -18,7 +14,7 @@ Aquí el usuario verá sus materias, tareas y clases.
     <!-- ==================== BARRA DE NAVEGACIÓN ==================== -->
     <nav class="navbar">
         <div class="nav-brand">
-            <h1>ListToDo 📝</h1>
+            <h1>ListaDo 📝</h1>
         </div>
 
         <div class="nav-user">
@@ -28,9 +24,6 @@ Aquí el usuario verá sus materias, tareas y clases.
 
         <!-- Botón hamburguesa para móvil -->
         <button id="mobile-menu-btn" class="mobile-menu-btn">☰</button>
-        <!-- Este botón solo será visible en celulares.
-         El símbolo ☰ es el ícono estándar de "menú hamburguesa".
-         En escritorio estará oculto (display: none). -->
     </nav>
 
     <!-- Menú desplegable para móvil -->
@@ -39,39 +32,34 @@ Aquí el usuario verá sus materias, tareas y clases.
         <button id="mobile-logout-btn" class="btn-logout">Cerrar Sesión</button>
     </div>
 
-    <!-- ==================== CONTENIDO PRINCIPAL ==================== -->
     <main class="main-content">
 
-        <!-- --- PANEL DE BIENVENIDA Y RESUMEN --- -->
+        <!-- ==================== BIENVENIDA ==================== -->
         <section class="welcome-section">
-            <h2>¡Bienvenido, <span id="welcome-name">estudiante</span>! 👋</h2>
-            <p class="welcome-text">Aquí puedes gestionar tus materias, tareas y apuntes de clase.</p>
+            <h2>¡Hola, <span id="welcome-name">Cargando...</span>! 👋</h2>
+            <p class="welcome-text">Aquí está tu resumen de actividades</p>
         </section>
-        <!-- <section> es una etiqueta semántica que agrupa contenido
-         relacionado. Es como un <div> pero con significado:
-         le dice al navegador "esto es una sección del contenido". -->
 
-        <!-- --- PANEL DE TAREAS PRÓXIMAS --- -->
+        <!-- ==================== TAREAS PRÓXIMAS ==================== -->
         <section class="upcoming-section">
-            <div class="section-header">
-                <h3>📅 Tareas próximas a entregar</h3>
-            </div>
-            <div id="upcoming-tasks" class="upcoming-list">
-                <p class="empty-message">No tienes tareas próximas. ¡Bien hecho! 🎉</p>
+            <h3>⏰ Tareas Próximas</h3>
+            <div id="upcoming-tasks">
+                <p class="empty-message">Cargando tareas...</p>
             </div>
         </section>
-        <!-- Este panel mostrará las tareas más cercanas a su fecha de
-         entrega, sin importar la materia. Lo llenaremos con datos
-         reales cuando creemos el módulo de tareas. -->
 
-        <!-- --- PANEL DE MATERIAS --- -->
+        <!-- ==================== MATERIAS ==================== -->
         <section class="subjects-section">
             <div class="section-header">
                 <h3>📚 Mis Materias</h3>
                 <button id="add-subject-btn" class="btn-add">+ Nueva Materia</button>
-                <!-- Este botón abrirá un formulario para crear materias.
-                Lo conectaremos en el Módulo 4. -->
             </div>
+
+            <!-- BUSCADOR DE MATERIAS -->
+            <div class="search-container">
+                <input type="text" id="search-subjects" class="search-input" placeholder="Buscar materia...">
+            </div>
+
             <div id="subjects-list" class="subjects-grid">
                 <p class="empty-message">Aún no tienes materias. ¡Crea tu primera materia!</p>
             </div>
@@ -79,6 +67,7 @@ Aquí el usuario verá sus materias, tareas y clases.
 
     </main>
 
+    <script src="/js/utils.js"></script>
     <script src="/js/dashboard.js"></script>
 </body>
 

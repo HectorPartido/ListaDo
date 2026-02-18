@@ -156,7 +156,8 @@ el formulario de registro cuando se muestra el de login. */
 /* ::placeholder → Estiliza el texto del placeholder
    (el texto gris de ejemplo como "tu@email.com"). */
 
-.btn-primary {
+.btn-primary,
+.btn-submit {
     padding: 12px;
     background-color: #3b82f6;
     color: white;
@@ -169,7 +170,8 @@ el formulario de registro cuando se muestra el de login. */
     margin-top: 5px;
 }
 
-.btn-primary:hover {
+.btn-primary:hover,
+.btn-submit:hover {
     background-color: #2563eb;
 }
 
