@@ -469,6 +469,259 @@ body {
 }
 
 /* ============================================
+   CALENDARIO
+   ============================================ */
+.calendar-section {
+    background-color: #1e293b;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+    border: 1px solid #334155;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.calendar-header h3 {
+    font-size: 1.1rem;
+    text-transform: capitalize;
+}
+
+/* text-transform: capitalize → Pone en mayúscula la primera
+   letra de cada palabra. "marzo 2025" → "Marzo 2025". */
+
+.calendar-nav-btn {
+    background-color: #334155;
+    border: none;
+    color: #e2e8f0;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.calendar-nav-btn:hover {
+    background-color: #475569;
+}
+
+/* --- DÍAS DE LA SEMANA --- */
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+/* repeat(7, 1fr) → Crea 7 columnas iguales.
+   Cada columna ocupa 1 fracción (1fr) del espacio disponible.
+   Perfecto para los 7 días de la semana. */
+
+.calendar-weekdays span {
+    text-align: center;
+    font-size: 0.75rem;
+    color: #64748b;
+    font-weight: 600;
+    padding: 6px 0;
+}
+
+/* --- GRILLA DEL CALENDARIO --- */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+/* --- DÍA DEL CALENDARIO --- */
+.calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: #94a3b8;
+    position: relative;
+    transition: all 0.2s ease;
+    gap: 3px;
+}
+
+.calendar-day:hover {
+    background-color: #334155;
+}
+
+.calendar-day.today {
+    background-color: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+    font-weight: 700;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.calendar-day.other-month {
+    color: #334155;
+    cursor: default;
+}
+
+/* Días del mes anterior/siguiente que aparecen en la grilla.
+   Se ven muy tenues para indicar que no son del mes actual. */
+
+.calendar-day.other-month:hover {
+    background-color: transparent;
+}
+
+.calendar-day.selected {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.calendar-day.selected .task-dots span {
+    border-color: white;
+}
+
+/* --- INDICADORES DE TAREAS (DOTS) --- */
+.task-dots {
+    display: flex;
+    gap: 3px;
+    justify-content: center;
+}
+
+.task-dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    border: 1px solid transparent;
+}
+
+/* Pequeños puntos de color que indican que hay tareas ese día.
+   Cada punto tiene el color de la prioridad de la tarea. */
+
+.dot-high {
+    background-color: #ef4444;
+}
+
+.dot-medium {
+    background-color: #f59e0b;
+}
+
+.dot-low {
+    background-color: #22c55e;
+}
+
+.dot-completed {
+    background-color: #475569;
+}
+
+/* --- PANEL DE TAREAS DEL DÍA --- */
+.day-tasks {
+    margin-top: 15px;
+    border-top: 1px solid #334155;
+    padding-top: 15px;
+}
+
+.day-tasks-title {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    margin-bottom: 10px;
+}
+
+.day-task-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background-color: #0f172a;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    border-left: 3px solid #3b82f6;
+    transition: background-color 0.2s ease;
+}
+
+.day-task-item:hover {
+    background-color: #1a2332;
+}
+
+.day-task-item.completed {
+    opacity: 0.5;
+}
+
+.day-task-item.completed .day-task-title {
+    text-decoration: line-through;
+}
+
+.day-task-priority {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.day-task-info {
+    flex: 1;
+}
+
+.day-task-title {
+    font-size: 0.85rem;
+    margin-bottom: 2px;
+}
+
+.day-task-subject {
+    font-size: 0.72rem;
+    color: #64748b;
+}
+
+.day-task-status {
+    font-size: 0.72rem;
+    color: #64748b;
+}
+
+/* --- CHECKBOX MINI PARA TAREAS PRÓXIMAS --- */
+.task-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.task-checkbox-mini {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    border: 2px solid #475569;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.task-checkbox-mini:hover {
+    border-color: #22c55e;
+    background-color: rgba(34, 197, 94, 0.1);
+}
+
+.task-checkbox-mini.checked {
+    background-color: #22c55e;
+    border-color: #22c55e;
+}
+
+.task-checkbox-mini.checked::after {
+    content: '✓';
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+/* ============================================
    RESPONSIVE — Dashboard
    ============================================ */
 
@@ -485,10 +738,6 @@ body {
     .nav-user span {
         display: none;
     }
-
-    /* Ocultamos el nombre del usuario en el navbar para tablets
-     y celulares. Ahorra espacio horizontal. El nombre ya aparece
-     en el saludo del dashboard. */
 
     .main-content {
         padding: 20px 15px;
@@ -546,6 +795,16 @@ body {
 
     .task-date {
         text-align: left;
+    }
+
+    /* --- CALENDARIO RESPONSIVE --- */
+    .calendar-day {
+        font-size: 0.75rem;
+    }
+
+    .task-dots span {
+        width: 4px;
+        height: 4px;
     }
 }
 
@@ -616,7 +875,28 @@ body {
         justify-content: center;
     }
 
-    /* Centra los botones de color en celulares. */
+    /* --- CALENDARIO RESPONSIVE --- */
+    .calendar-section {
+        padding: 15px 10px;
+    }
+
+    .calendar-day {
+        font-size: 0.7rem;
+        border-radius: 6px;
+    }
+
+    .calendar-header h3 {
+        font-size: 0.95rem;
+    }
+
+    .task-dots span {
+        width: 3px;
+        height: 3px;
+    }
+
+    .day-task-item {
+        padding: 8px 10px;
+    }
 }
 
 /* ============================================

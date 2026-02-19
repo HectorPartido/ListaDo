@@ -11,7 +11,8 @@ const {
     getUpcomingTasks,
     updateTask,
     toggleTaskCompleted,
-    deleteTask
+    deleteTask,
+    getTasksByMonth
 } = require('../controllers/taskController');
 
 // Todas las rutas requieren autenticación
@@ -22,6 +23,9 @@ router.post('/', createTask);
 
 // GET    /api/tasks/upcoming       → Tareas próximas (todas las materias)
 router.get('/upcoming', getUpcomingTasks);
+
+// GET    /api/tasks/calendar/:year/:month  → Tareas de un mes
+router.get('/calendar/:year/:month', getTasksByMonth);
 
 // GET    /api/tasks/subject/:subjectId → Tareas de una materia específica
 router.get('/subject/:subjectId', getTasksBySubject);

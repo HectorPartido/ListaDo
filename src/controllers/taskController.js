@@ -331,6 +331,90 @@ const deleteTask = async (req, res) => {
     }
 };
 
+// =====================================================
+// OBTENER tareas de un mes específico (GET)
+// =====================================================
+const getTasksByMonth = async (req, res) => {
+    try {
+        const { year, month } = req.params;
+        // La ruta será /api/tasks/calendar/2025/3
+        // year = "2025", month = "3" (marzo)
+
+        // Validar que sean números válidos
+        const yearNum = parseInt(year);
+        const monthNum = parseInt(month);
+        // parseInt() → Convierte un string a número entero.
+        // parseInt("2025") → 2025
+        // parseInt("abc") → NaN (Not a Number)
+
+        if (isNaN(yearNum) || isNaN(monthNum) || monthNum < 1 || monthNum > 12) {
+            return res.status(400).json({ error: 'Año o mes inválido' });
+        }
+        // isNaN() → "is Not a Number". Retorna true si el valor no es un número.
+
+        // Calcular el primer y último día del mes
+        const startDate = `${yearNum}-${String(monthNum).padStart(2, '0')}-01`;
+        const lastDay = new Date(yearNum, monthNum, 0).getDate();
+        const endDate = `${yearNum}-${String(monthNum).padStart(2, '0')}-${lastDay}`;
+        // String(monthNum).padStart(2, '0')
+        //   → Convierte a string y rellena con ceros a la izquierda
+        //   hasta tener 2 caracteres.
+        //   String(3).padStart(2, '0') → "03"
+        //   String(12).padStart(2, '0') → "12"
+        //
+        // new Date(yearNum, monthNum, 0).getDate()
+        //   → Truco para obtener el último día del mes.
+        //   new Date(2025, 3, 0) → 28 de febrero de 2025... ¡NO!
+        //   En JavaScript, los meses van de 0 a 11.
+        //   Entonces new Date(2025, 3, 0) = día 0 de abril = 31 de marzo.
+        //   .getDate() retorna el número del día: 31.
+        //
+        // Así obtenemos: startDate = "2025-03-01", endDate = "2025-03-31"
+
+        // Obtener materias del usuario
+        const { data: userSubjects } = await supabase
+            .from('subjects')
+            .select('id')
+            .eq('user_id', req.user.id);
+
+        if (!userSubjects || userSubjects.length === 0) {
+            return res.status(200).json({ tasks: [] });
+        }
+
+        const subjectIds = userSubjects.map(s => s.id);
+
+        // Obtener tareas del mes
+        const { data: tasks, error } = await supabase
+            .from('tasks')
+            .select(`
+        *,
+        subjects ( name, color ),
+        classes ( id, title )
+      `)
+            .in('subject_id', subjectIds)
+            .gte('due_date', startDate)
+            .lte('due_date', endDate)
+            .order('due_date', { ascending: true });
+        // .gte() → "Greater Than or Equal" (mayor o igual que).
+        //   Filtra tareas cuya fecha de entrega sea >= primer día del mes.
+        //
+        // .lte() → "Less Than or Equal" (menor o igual que).
+        //   Filtra tareas cuya fecha de entrega sea <= último día del mes.
+        //
+        // Combinados, obtenemos todas las tareas dentro del rango del mes.
+
+        if (error) {
+            console.error('Error al obtener tareas del mes:', error);
+            return res.status(500).json({ error: 'Error al obtener tareas' });
+        }
+
+        res.status(200).json({ tasks });
+
+    } catch (error) {
+        console.error('Error en getTasksByMonth:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+};
 
 module.exports = {
     createTask,
@@ -338,5 +422,6 @@ module.exports = {
     getUpcomingTasks,
     updateTask,
     toggleTaskCompleted,
-    deleteTask
+    deleteTask,
+    getTasksByMonth
 };
